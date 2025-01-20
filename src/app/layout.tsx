@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Provider } from "@/components/ui/provider"
-
+import { Provider } from "@/components/ui/provider";
+import { Grid, Box, Flex } from "@chakra-ui/react";
+import Navbar from "@/components/parts/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,10 +27,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <Provider>
+          <main className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <Flex direction={"row"} maxH={"dvh"} overflow={"hidden"} bgColor={"gray.200"} gapX={10}>
+              <Box hideBelow={"lg"} flexBasis={{xl: "20%", lg: "0%"}} position={"relative"} shadow={"xs"} overflowY={"auto"} overflowX={"hidden"}>
+                <Navbar />
+              </Box>
+              <Box flexBasis={"80%"} mt={10}>
+                {children}
+              </Box>
+            </Flex>
+          </main>
+        </Provider>
       </body>
     </html>
   );
