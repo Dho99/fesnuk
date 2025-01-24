@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Flex, Text, Link } from "@chakra-ui/react";
 import {
   ChatBubbleLeftRightIcon,
@@ -11,65 +13,90 @@ import {
   BookmarkIcon,
   HandThumbUpIcon,
   FolderArrowDownIcon,
-  Bars3Icon
+  Bars3Icon,
+  Cog6ToothIcon
 } from "@heroicons/react/24/outline";
 
+import { useRouter } from "next/navigation";
+
 type Menu = {
-  icon: typeof ChatBubbleLeftRightIcon;
-  menuName: String;
+  icon: typeof ChatBubbleLeftRightIcon
+  menuName: String
+  href: string
 };
 
 const mainMenu: Menu[] = [
   {
     icon: ChatBubbleLeftRightIcon,
     menuName: "Messages",
+    href: '/messages',
   },
   {
     icon: UsersIcon,
     menuName: "People",
+     href: '#',
   },
   {
     icon: NewspaperIcon,
     menuName: "Feed",
+     href: '#',
   },
   {
     icon: UserCircleIcon,
     menuName: "Profile",
+     href: '/profile'
+  },
+  {
+    icon: Cog6ToothIcon,
+    menuName: "Settings",
+     href: '/settings'
   },
 ];
 
 const exploreMenu: Menu[] = [
   {
     icon: DeviceTabletIcon,
-    menuName: "Pages"
+    menuName: "Pages",
+     href: "/pages",
   },
   {
     icon: CalendarDaysIcon,
-    menuName: "Events"
+    menuName: "Events",
+     href: "#",
   },
   {
     icon: BriefcaseIcon,
-    menuName: "Jobs"
+    menuName: "Jobs",
+     href: "#",
   },
   {
     icon: FolderArrowDownIcon,
-    menuName: "Groups"
+    menuName: "Groups",
+     href: "#",
   },
   {
     icon: BookmarkIcon,
-    menuName: "Saved"
+    menuName: "Saved",
+     href: "#",
   },
   {
     icon: HandThumbUpIcon,
-    menuName: "Recommendations"
+    menuName: "Recommendations",
+     href: "#",
   },
   {
     icon: FolderOpenIcon,
-    menuName: "Memories"
+    menuName: "Memories",
+    href: "#",
   }
 ]
 
+
+
 export default function Navbar() {
+  const router = useRouter();
+  
+
   return (
     <Box minHeight={"dvh"} bgColor={"white"} px={5}>
       <Flex direction={"row"} color={"black"} py="4" alignItems={"center"}>
@@ -93,6 +120,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
+            onClick={() =>  {router.push(menu.href)}}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />
@@ -112,6 +140,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
+            onClick={() => {router.push(menu.href)}}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />
