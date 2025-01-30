@@ -57,7 +57,7 @@ const exploreMenu: Menu[] = [
   {
     icon: DeviceTabletIcon,
     menuName: "Pages",
-     href: "/pages",
+     href: "/home",
   },
   {
     icon: CalendarDaysIcon,
@@ -120,7 +120,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
-            onClick={() =>  {router.push(menu.href)}}
+            onClick={() =>  {router.push(`/pages/${menu.href}`)}}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />
@@ -140,7 +140,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
-            onClick={() => {router.push(menu.href)}}
+            onClick={() => {router.push(`/pages/${menu.href}`)}}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />

@@ -2,7 +2,7 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/auth";
 
-export default function Logout() {
+export default async function Logout() {
   return (
     <Flex flexDir="column" w="full" h="90vh" justifyContent={"center"}>
       <Box
@@ -25,7 +25,7 @@ export default function Logout() {
           </Button>
           <form action={async() => {
             "use server"
-            await signOut()
+            await signOut({redirectTo: '/auth'})
           }}>
             <Button
               variant="solid"

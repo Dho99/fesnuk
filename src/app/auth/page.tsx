@@ -5,10 +5,12 @@ import GoogleIcon from "@/../public/icons/googleIcon.png";
 import FacebookIcon from "@/../public/icons/facebookIcon.png";
 import GithubIcon from "@/../public/icons/githubIcon.png";
 import LoginForm from "@/components/parts/auth";
+import { auth } from "@/auth";
 
 import { signIn } from "@/auth";
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth()
 
   return (
     <Box
@@ -33,7 +35,8 @@ export default function Page() {
         px={"3em"}
         shadow="md"
         
-      >
+        >
+        {JSON.stringify(session)}
 
         <LoginForm />
        
@@ -53,7 +56,7 @@ export default function Page() {
             <form
               onSubmit={async () => {
                 "use server"
-              await signIn("github");
+                await signIn("github");
               }}
             >
               <Button border={"1px solid"} type="submit" w="full" rounded="lg" py="2" px="10">

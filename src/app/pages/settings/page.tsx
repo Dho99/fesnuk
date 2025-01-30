@@ -2,7 +2,7 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/auth";
 
-export default function Logout() {
+export default function Page() {
   return (
     <Flex flexDir="column" w="full" h="90vh" justifyContent={"center"}>
       <Box
@@ -12,7 +12,7 @@ export default function Logout() {
         color="black"
         alignItems={"center"}
       >
-        <Text textStyle={"lg"}>Apakah anda akan mengakhiri sesi ?</Text>
+        {/* <Text textStyle={"lg"}>Apakah anda akan mengakhiri sesi ?</Text>
         <Flex direction={"row"} gapX={4} mt={3}>
           <Button
             variant="solid"
@@ -23,7 +23,7 @@ export default function Logout() {
           >
             Tetap Disini
           </Button>
-          <form action={async() => {
+          <form onSubmit={async() => {
             "use server"
             await signOut()
           }}>
@@ -38,7 +38,7 @@ export default function Logout() {
               Sign Out
             </Button>
           </form>
-        </Flex>
+        </Flex> */}
       </Box>
     </Flex>
   );

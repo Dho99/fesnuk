@@ -76,7 +76,7 @@ export default function LoginForm() {
           />
         </InputGroup>
       </Box>
-        {JSON.stringify(userData)}
+        {/* {JSON.stringify(userData)} */}
       {!userData.isLogin ? (
         // Input field for register session
         <Flex gap="4" my="4" flexDir={"column"}>
