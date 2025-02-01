@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Box, Input, Text, Center, Flex, Button, Link } from "@chakra-ui/react";
 import {
   ArrowRightEndOnRectangleIcon as LoginIcon,
@@ -9,26 +9,23 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { InputGroup } from "@/components/ui/input-group";
+import { authenticate, register } from "@/lib/signin"
+import { useActionState } from "react";
 
-type InputAuthForm = {
-    email: string,
-    username: string|null,
-    password: string,
-    isLogin: boolean
-}
 
 export default function LoginForm() {
-//   const [isLoginPage, setLoginPage] = useState(false);
-  const [userData, setUserData] = useState<InputAuthForm>({
-    email: "",
-    username: "",
-    password: "",
-    isLogin: true
-  })
-  
+  const [isLoginPage, setLogin] = useState<boolean>(false);
+
+
+  const [errorMessage, handleSubmit] = useActionState(
+    isLoginPage ? authenticate : register,
+    undefined
+  );
+
   const setLoginPage = (): void => {
-    setUserData({email: "", username: "", password: "", isLogin: !userData.isLogin})
-  }
+    setLogin(!isLoginPage);
+  };
+
 
   return (
     <>
@@ -45,93 +42,98 @@ export default function LoginForm() {
       </Box>
       <Box mt="9" mb="1">
         <Text textStyle="3xl" fontWeight={"bold"} textAlign={"center"}>
-          {userData.isLogin ? "Sign in" : "Register"} fesnuk.
+          {isLoginPage ? "Sign in" : "Register"} fesnuk.
         </Text>
       </Box>
+      {
+        errorMessage && (
+          <Text color={"red.500"} textAlign={"center"}>{errorMessage}</Text>
+        )
+      }
       <Box>
         <Text textStyle={"md"} color={"gray.600"} textAlign={"center"}>
-          {userData.isLogin ? "Sign in" : "Register"} fesnuk. for enjoying some
+          {isLoginPage ? "Sign in" : "Register"} fesnuk. for enjoying some
           amazing features, for connecting you to around the world
         </Text>
       </Box>
-      <Box mt="10" mb={userData.isLogin ? "4" : "0"}>
-        <InputGroup
-          flex="1"
-          startElement={<Email className="size-7" />}
-          w="full"
-          rounded="xl"
-        >
-          <Input
-            placeholder="Email"
-            border="1px solid #d1d1d1"
-            py="6"
-            ps="4em"
-            rounded={"2xl"}
-            bgColor="gray.100"
-            shadow="xs"
-            _focus={{ bgColor: "white" }}
-            onChange={(e) => {
-                setUserData({ ...userData, email: e.target.value });
-            }}
-          />
-        </InputGroup>
-      </Box>
-        {/* {JSON.stringify(userData)} */}
-      {!userData.isLogin ? (
-        // Input field for register session
-        <Flex gap="4" my="4" flexDir={"column"}>
-          <Box w="full">
-            <InputGroup
-              flex="1"
-              startElement={<UserIcon className="size-7" />}
-              w="full"
+      <form action={handleSubmit}>
+        <Box mt="10" mb={isLoginPage ? "4" : "0"}>
+          <InputGroup
+            flex="1"
+            startElement={<Email className="size-7" />}
+            w="full"
+            rounded="xl"
+          >
+            <Input
+              placeholder="Email"
+              border="1px solid #d1d1d1"
+              py="6"
+              ps="4em"
               rounded={"2xl"}
-            >
-              <Input
-                placeholder="Username"
-                border="1px solid #d1d1d1"
-                py="6"
-                ps="4em"
+              bgColor="gray.100"
+              shadow="xs"
+              _focus={{ bgColor: "white" }}
+              name="email"
+              required
+            />
+          </InputGroup>
+        </Box>
+        {/* {JSON.stringify(userData)} */}
+        {!isLoginPage ? (
+          // Input field for register session
+          <Flex gap="4" my="4" flexDir={"column"}>
+            <Box w="full">
+              <InputGroup
+                flex="1"
+                startElement={<UserIcon className="size-7" />}
+                w="full"
                 rounded={"2xl"}
-                bgColor="gray.100"
-                shadow="xs"
-                _focus={{ bgColor: "white" }}
-                onChange={(e) => {
-                    setUserData({...userData, username: e.target.value})
-                }}
-              />
-            </InputGroup>
-          </Box>
-        </Flex>
-      ) : (
-        <></>
-      )}
+              >
+                <Input
+                  placeholder="Username"
+                  border="1px solid #d1d1d1"
+                  py="6"
+                  ps="4em"
+                  rounded={"2xl"}
+                  bgColor="gray.100"
+                  shadow="xs"
+                  _focus={{ bgColor: "white" }}
+                  name="name"
+                  required
 
-      <Box>
-        <InputGroup
-          flex="1"
-          startElement={<Password className="size-7" />}
-          w="full"
-          rounded={"2xl"}
-        >
-          <Input
-            placeholder="Password"
-            border="1px solid #d1d1d1"
-            py="6"
-            ps="4em"
-            type="password"
+                />
+              </InputGroup>
+            </Box>
+          </Flex>
+        ) : (
+          <></>
+        )}
+
+        <Box>
+          <InputGroup
+            flex="1"
+            startElement={<Password className="size-7" />}
+            w="full"
             rounded={"2xl"}
-            bgColor="gray.100"
-            shadow="xs"
-            _focus={{ bgColor: "white" }}
-            onChange={(e) => {
-                setUserData({...userData, password: e.target.value})
-            }}
-          />
-        </InputGroup>
-      </Box>
+          >
+            <Input
+              placeholder="Password"
+              border="1px solid #d1d1d1"
+              py="6"
+              ps="4em"
+              type="password"
+              rounded={"2xl"}
+              bgColor="gray.100"
+              shadow="xs"
+              _focus={{ bgColor: "white" }}
+              name={"password"}
+              required
 
-      {userData.isLogin ? (
+            />
+          </InputGroup>
+        </Box>
+
+        {isLoginPage ? (
           <>
             <Box my="4" ms="auto">
               <Link textStyle={"md"} fontWeight={"bold"}>
@@ -187,12 +189,16 @@ export default function LoginForm() {
                 w="full"
                 rounded={"xl"}
                 py={6}
+                type={"submit"}
+              // onClick={() => { register({ data: userData }) }}
               >
                 <Text textStyle={"lg"}>Register Now !</Text>
               </Button>
             </Box>
           </>
         )}
+
+      </form>
 
       <Box my="8" position={"relative"}>
         <Box
@@ -209,7 +215,7 @@ export default function LoginForm() {
               top={-2.5}
             >
               <Text color={"gray.600"} fontWeight={"bold"}>
-                Or {userData.isLogin ? "Sign in" : "Register"} with
+                Or {isLoginPage ? "Sign in" : "Register"} with
               </Text>
             </Box>
           </Center>
