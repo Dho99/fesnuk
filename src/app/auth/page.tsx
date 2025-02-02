@@ -36,7 +36,7 @@ export default async function Page() {
         shadow="md"
         
         >
-        {JSON.stringify(session)}
+        {/* {JSON.stringify(session)} */}
 
         <LoginForm />
        

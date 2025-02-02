@@ -1,96 +1,97 @@
-'use server'
+"use server";
 
 import { prisma } from "./prisma";
-// import { AuthError } from "next-auth";
-import { z } from "zod"
+import { z } from "zod";
 import type { User } from "./definition";
-import { genSalt, hash } from "bcrypt-ts"
 import { userValidateSchema } from "./zodSchema";
 import { signIn } from "@/auth";
 import { hashPassword } from "./utils";
+import { compare } from "bcrypt-ts";
 
+export async function getUser(formData: FormData) {
+  const email = formData.get("email") as string;
+  const validatePayload = z.string().email().safeParse(email);
 
-export async function getUser(formData: FormData): Promise<User | boolean | void> {
-    const email = formData.get('email') as string;
-    const validatePayload = z.string().email().safeParse(email)
+  if (!validatePayload.success) throw "Input Validation Error";
 
-    if (!validatePayload.success) throw 'Input Validation Error';
-
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email
-        }
-    })
-
-    if (!user) return false
-    return user
-
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  if (!user) return false;
+  return user;
 }
 
-export async function authenticate(
-    prevState: string | undefined,
-    formData: FormData,
-) {
+export async function authenticate(prevState: unknown, formData: FormData) {
+  try {
+    const findUser = await getUser(formData);
+    const passwordInput = formData.get("password") as string;
+    const hashPasswordInput = await hashPassword(passwordInput);
+    if (!findUser) return "User not found";
 
+    const userFound = {
+      email: findUser.email,
+      password: findUser.password,
+    };
+
+    if (!userFound.password)
+      return "User registered, choose another Authentication Method";
+
+    const comparePassword = await compare(passwordInput, userFound.password);
+    if (!comparePassword) return "Password mismatch";
+    await signIn("credentials", userFound);
+    return undefined;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function register(prevState: unknown, formData: FormData) {
+  try {
+    const findUser = await getUser(formData);
+    if (findUser) return "User found, Login Instead";
+
+    const register = await registerUser(formData);
+    if (!register) return "Register failed";
+
+    return "Register Completed, please login";
+  } catch (error) {
+    throw error;
+  }
+}
+
+const registerUser = async (formData: FormData) => {
+  const password = formData.get("password") as string;
+  const userForm = {
+    name: formData.get("name") as string,
+    password: await hashPassword(password),
+    email: formData.get("email") as string,
+  };
+
+  try {
+    const validatedData = userValidateSchema.parse(userForm);
     try {
-        const findUser = await getUser(formData);
-        if (!findUser) return "User not found"
+      const { email, name, password } = validatedData;
 
+      const createUser = await prisma.user.create({
+        data: {
+          email: email,
+          name: name,
+          password: password,
+        },
+      });
 
-    } catch (error) {
-        return error
+      if (!createUser) return "Register Failed";
+      return true;
+    } catch (err) {
+      return JSON.stringify(err);
     }
-
-}
-
-export async function register(
-    prevState: string | undefined,
-    formData: FormData,
-) {
-    try {
-        const findUser = await getUser(formData);
-        if (findUser) return "User found, Login Instead";
-        registerUser(formData);
-
-    } catch (error) {
-        return error
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation errors:", error);
+    } else {
+      throw error;
     }
-
-}
-
-const registerUser = async (formData: FormData): Promise<void | boolean> => {
-
-    const password = formData.get("password") as string
-    const userForm = {
-        name: formData.get("name") as string,
-        password: hashPassword(password),
-        email: formData.get("email") as string
-    }
-
-    try {
-        const validatedData = userValidateSchema.parse(userForm);
-        try {
-            const { email, name, password } = validatedData
-            await prisma.user.create({
-                data: {
-                    email: email,
-                    name: name,
-                    password: password
-                }
-            }).then(() => {
-                console.log("successfuly created");
-            }).catch((err) => {
-                console.log("err : " + err)
-            })
-        } catch (err) {
-            console.log("Failed create data : ", err)
-        }
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            console.error('Validation errors:', error);
-        } else {
-            throw error;
-        }
-    }
-
-}
+  }
+};

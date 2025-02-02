@@ -9,26 +9,22 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { InputGroup } from "@/components/ui/input-group";
-import { authenticate, register } from "@/lib/signin"
+import { authenticate, register } from "@/lib/signin";
 import { useActionState } from "react";
 
+export default function LoginForm(): React.ReactNode {
+  const [isLoginPage, setLogin] = useState<boolean>(true);
 
-export default function LoginForm() {
-  const [isLoginPage, setLogin] = useState<boolean>(false);
+  const [errorRegister, handleRegister] = useActionState(register, undefined);
 
-
-  const [errorMessage, handleSubmit] = useActionState(
-    isLoginPage ? authenticate : register,
-    undefined
-  );
+  const [errorLogin, handleLogin] = useActionState(authenticate, undefined);
 
   const setLoginPage = (): void => {
     setLogin(!isLoginPage);
   };
 
-
   return (
-    <>
+    <div>
       <Box
         bgColor={"white"}
         h="14"
@@ -40,23 +36,36 @@ export default function LoginForm() {
       >
         <LoginIcon className="size-8" />
       </Box>
+      {/* <Text color={"black"}>{JSON.stringify(isLoginPage)}</Text> */}
       <Box mt="9" mb="1">
         <Text textStyle="3xl" fontWeight={"bold"} textAlign={"center"}>
           {isLoginPage ? "Sign in" : "Register"} fesnuk.
         </Text>
       </Box>
-      {
-        errorMessage && (
-          <Text color={"red.500"} textAlign={"center"}>{errorMessage}</Text>
-        )
-      }
+      {isLoginPage ? (
+        <>
+          {typeof errorLogin == "string" && (
+            <Text color={"red.500"} textAlign={"center"}>
+              {errorLogin}
+            </Text>
+          )}
+        </>
+      ) : (
+        <>
+         {typeof errorRegister == "string" && (
+            <Text color={"red.500"} textAlign={"center"}>
+              {errorRegister}
+            </Text>
+          )}</>
+      )}
+
       <Box>
         <Text textStyle={"md"} color={"gray.600"} textAlign={"center"}>
           {isLoginPage ? "Sign in" : "Register"} fesnuk. for enjoying some
           amazing features, for connecting you to around the world
         </Text>
       </Box>
-      <form action={handleSubmit}>
+      <form action={isLoginPage ? handleLogin : handleRegister}>
         <Box mt="10" mb={isLoginPage ? "4" : "0"}>
           <InputGroup
             flex="1"
@@ -100,7 +109,6 @@ export default function LoginForm() {
                   _focus={{ bgColor: "white" }}
                   name="name"
                   required
-
                 />
               </InputGroup>
             </Box>
@@ -128,7 +136,6 @@ export default function LoginForm() {
               _focus={{ bgColor: "white" }}
               name={"password"}
               required
-
             />
           </InputGroup>
         </Box>
@@ -191,14 +198,14 @@ export default function LoginForm() {
                 rounded={"xl"}
                 py={6}
                 type={"submit"}
-              // onClick={() => { register({ data: userData }) }}
+
+                // onClick={() => { register({ data: userData }) }}
               >
                 <Text textStyle={"lg"}>Register Now !</Text>
               </Button>
             </Box>
           </>
         )}
-
       </form>
 
       <Box my="8" position={"relative"}>
@@ -222,6 +229,6 @@ export default function LoginForm() {
           </Center>
         </Box>
       </Box>
-    </>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import type { Provider } from "next-auth/providers";
 import type { NextAuthConfig } from "next-auth";
-// import { showSession } from "./lib/signin";
+import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
 
@@ -15,9 +15,15 @@ export const providerConfigs: Provider[] = [
     //   return { ...profile, id: profile.id.toString() };
     // },
   }),
-  // Credentials({
-
-  // })
+  Credentials({
+    // credentials: {
+    //   email: {},
+    //   password: {}
+    // },
+    authorize: async(credentials) => {
+      return credentials
+    }
+  })
 ];
 
 export const config = {
@@ -28,7 +34,6 @@ export const authConfig = {
   ...config,
   pages: {
     signIn: "/auth",
-    signOut: "/auth",
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {

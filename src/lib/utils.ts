@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const hashPassword = async (raw: string): Promise<string | null> => {
+export const hashPassword = async (raw: string) => {
   const hashRawPswd = await genSalt(10).then((salt) => hash(raw, salt));
   return hashRawPswd;
 }
