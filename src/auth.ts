@@ -15,6 +15,9 @@ export const providerConfigs: Provider[] = [
     //   return { ...profile, id: profile.id.toString() };
     // },
   }),
+  // Credentials({
+
+  // })
 ];
 
 export const config = {

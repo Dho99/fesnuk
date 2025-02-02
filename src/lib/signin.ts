@@ -6,6 +6,8 @@ import { z } from "zod"
 import type { User } from "./definition";
 import { genSalt, hash } from "bcrypt-ts"
 import { userValidateSchema } from "./zodSchema";
+import { signIn } from "@/auth";
+import { hashPassword } from "./utils";
 
 
 export async function getUser(formData: FormData): Promise<User | boolean | void> {
@@ -31,8 +33,10 @@ export async function authenticate(
 ) {
 
     try {
-        // const findUser = await getUser(formData);
-        // console.log(findUser)
+        const findUser = await getUser(formData);
+        if (!findUser) return "User not found"
+
+
     } catch (error) {
         return error
     }
@@ -45,11 +49,11 @@ export async function register(
 ) {
     try {
         const findUser = await getUser(formData);
-        if (findUser) throw "User found, Login Instead";
+        if (findUser) return "User found, Login Instead";
         registerUser(formData);
 
     } catch (error) {
-        return "Unexpected error occured";
+        return error
     }
 
 }
@@ -59,7 +63,7 @@ const registerUser = async (formData: FormData): Promise<void | boolean> => {
     const password = formData.get("password") as string
     const userForm = {
         name: formData.get("name") as string,
-        password: await genSalt(10).then((salt) => hash(password, salt)),
+        password: hashPassword(password),
         email: formData.get("email") as string
     }
 

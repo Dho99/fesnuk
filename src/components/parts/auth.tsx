@@ -147,6 +147,7 @@ export default function LoginForm() {
                 w="full"
                 rounded={"xl"}
                 py={6}
+                type="submit"
               >
                 <Text textStyle={"lg"}>Sign in</Text>
               </Button>
