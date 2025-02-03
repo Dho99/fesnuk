@@ -16,6 +16,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   password      String?
+  posts         Post[]
+  comments      Comment[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -75,4 +77,36 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Post{
+  postId        String @unique @default(cuid())
+  title         String
+  description   String?
+  images        PostImage[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String
+  comments      Comment[]
+
+  user User @relation(fields: [userId], references: [id])
+
+
+
+}
+
+model PostImage {
+  id          String @unique @default(cuid())
+  post        Post? @relation(fields: [postId], references: [postId])
+  postId      String
+  thumbnail   String
+}
+
+model Comment {
+  id        String @unique @default(cuid())
+  postId    String
+  authorId  String
+
+  author User @relation(fields: [authorId], references: [id])
+  post Post @relation(fields: [postId], references: [postId])
 }

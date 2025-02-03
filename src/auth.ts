@@ -10,16 +10,9 @@ export const providerConfigs: Provider[] = [
   GitHub({
     clientId: process.env.AUTH_GITHUB_ID,
     clientSecret: process.env.AUTH_GITHUB_SECRET,
-    // async profile(profile) {
-    //   // showSession({ session: profile })
-    //   return { ...profile, id: profile.id.toString() };
-    // },
+
   }),
   Credentials({
-    // credentials: {
-    //   email: {},
-    //   password: {}
-    // },
     authorize: async(credentials) => {
       return credentials
     }
