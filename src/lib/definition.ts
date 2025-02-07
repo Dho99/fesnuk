@@ -10,3 +10,11 @@ export type User = {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export type Post = {
+    postId: string,
+    description: string,
+    createdAt: Date | null,
+    updatedAt: Date | null,
+    userId: string
+}

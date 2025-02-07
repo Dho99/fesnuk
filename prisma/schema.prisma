@@ -81,7 +81,6 @@ model Authenticator {
 
 model Post{
   postId        String @unique @default(cuid())
-  title         String
   description   String?
   images        PostImage[]
   createdAt     DateTime @default(now())

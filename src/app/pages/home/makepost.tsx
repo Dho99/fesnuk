@@ -1,0 +1,89 @@
+"use client";
+
+import { Flex, Box, Text, Button, Textarea } from "@chakra-ui/react";
+import {
+  FaceSmileIcon,
+  PhotoIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/outline";
+import { useActionState, useRef } from "react";
+import { createPost } from "@/lib/handler/post";
+
+export default function MakePost() {
+
+  const [errorMessage, submitHandler] = useActionState(
+    async(state: unknown, payload: FormData) => {
+      if(payload === null){
+        return null;
+      }
+
+      const response = await createPost(state, payload);
+      return response;
+    },
+    null
+  );
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  return (
+    <>
+          {
+            typeof errorMessage == "string" && (
+              <Box w="" bgColor={"red.500"} p={4} rounded={"lg"} mb={5} color={"white"}>{errorMessage}</Box>
+            )
+          }
+
+          <form ref={formRef} action={submitHandler}>
+            <Flex
+              direction={"row"}
+              bg={"white"}
+              px="5"
+              py="4"
+              rounded="xl"
+              shadow="xs"
+              alignItems={"center"}
+              gap={2}
+            >
+              <Box flexBasis={"10%"}>
+                <Box
+                  bgColor={"gray.300"}
+                  rounded={"full"}
+                  w={12}
+                  h={12}
+                  textAlign={"center"}
+                  alignContent={"center"}
+                >
+                  d
+                </Box>
+              </Box>
+
+              <Box flexBasis={"70%"} alignContent={"center"} display={"flex"}>
+                <Textarea
+                  resize={"none"}
+                  w="100%"
+                  placeholder="What's New ?"
+                  alignContent={"center"}
+                  px="2"
+                  textStyle={"lg"}
+                  name={"description"}
+                />
+              </Box>
+              <Box flexBasis={"20%"} alignContent={"center"} ms={"auto"}>
+                <Flex
+                  direction="row"
+                  gapX={5}
+                  display={"flex"}
+                  alignItems={"center"}
+                >
+                  <FaceSmileIcon className="size-8" />
+                  <PhotoIcon className="size-8" />
+                  <Button type="submit">
+                    <PaperAirplaneIcon className="size-8 " />
+                  </Button>
+                </Flex>
+              </Box>
+            </Flex>
+          </form>
+    </>
+  );
+}
