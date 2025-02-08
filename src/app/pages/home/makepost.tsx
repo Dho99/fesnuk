@@ -5,11 +5,17 @@ import {
   FaceSmileIcon,
   PhotoIcon,
   PaperAirplaneIcon,
+  UserCircleIcon
 } from "@heroicons/react/24/outline";
 import { useActionState, useRef } from "react";
 import { createPost } from "@/lib/handler/post";
+import Image from "next/image";
 
-export default function MakePost() {
+type MakePostProps = {
+  session: string|null|undefined
+}
+
+export default function MakePost({session}: MakePostProps) {
 
   const [errorMessage, submitHandler] = useActionState(
     async(state: unknown, payload: FormData) => {
@@ -53,7 +59,13 @@ export default function MakePost() {
                   textAlign={"center"}
                   alignContent={"center"}
                 >
-                  d
+                  {
+                    session && typeof session == "string" ? (
+                      <Image src={session} alt="Profile Image" width={12}/>
+                    ):(
+                      <UserCircleIcon className="text-slate-500"/>
+                    )
+                  }
                 </Box>
               </Box>
 

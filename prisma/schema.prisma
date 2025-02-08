@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 model User {
@@ -18,6 +19,7 @@ model User {
   password      String?
   posts         Post[]
   comments      Comment[]
+  savedPosts    SavedPost[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -87,10 +89,19 @@ model Post{
   updatedAt     DateTime @updatedAt
   userId        String
   comments      Comment[]
+  likes         Like[]
 
   user User @relation(fields: [userId], references: [id])
 
 
+}
+
+model Like {
+  userId      String
+  postId      String
+
+  post Post @relation(fields: [postId], references: [postId])
+  @@id([userId, postId])
 
 }
 
@@ -101,10 +112,21 @@ model PostImage {
   thumbnail   String
 }
 
+model SavedPost{
+  postId      String
+  userId      String
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([postId, userId])
+}
+
 model Comment {
-  id        String @unique @default(cuid())
-  postId    String
-  authorId  String
+  id          String @unique @default(cuid())
+  description String
+  postId      String
+  authorId    String
+  createdAt   DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id])
   post Post @relation(fields: [postId], references: [postId])

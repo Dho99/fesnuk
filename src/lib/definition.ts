@@ -12,9 +12,16 @@ export type User = {
 }
 
 export type Post = {
-    postId: string,
-    description: string,
-    createdAt: Date | null,
-    updatedAt: Date | null,
-    userId: string
+    postId?: string;
+    description?:  string;
+    images?:  string
+    createdAt?:  Date
+    updatedAt?:  Date
+    userId?:  string
+    comment?:  string
+    likes?:  string
 }
+
+export type CommentProps = {
+    postId: string;
+};

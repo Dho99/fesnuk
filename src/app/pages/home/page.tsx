@@ -10,13 +10,22 @@ import {
   ArrowTurnUpRightIcon
 } from "@heroicons/react/24/outline";
 import Events from "@/components/parts/events";
-import Post from "@/components/parts/post";
-import { EmojiButton } from "@/components/parts/post";
+import Post from "@/components/parts/post/post";
+import { EmojiButton } from "@/components/parts/post/post";
 import { createPost } from "@/lib/handler/post";
 import { Suspense } from "react";
 import MakePost from "./makepost";
+import { auth } from "@/auth";
+import { getUserPhoto } from "@/lib/handler/user";
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+
+  if(!session) return null;
+
+  const userProfile = await getUserPhoto(session.user?.email)
+
+
   return (
     <>
       <Flex
@@ -24,10 +33,10 @@ export default function Page() {
         color={"black"}
         gapX={{ lg: 8, md: 0 }}
         position={"relative"}
-        justifyContent={{ lg: "start", md: "center" }}
+        justifyContent={{ lg: "start", md: "center", base: "center" }}
       >
-        <Flex flexBasis={{ lg: "60%", md: "90%" }} direction={"column"}>
-          <MakePost />
+        <Flex w={{ lg: "60%", md: "90%", base: "90%" }} direction={"column"}>
+          <MakePost session={userProfile}/>
           <Flex mt="5" mb="10" direction={"column"} gapY="5">
             <Suspense fallback={<PostShadow />}>
               <Post />

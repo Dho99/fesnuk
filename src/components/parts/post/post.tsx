@@ -1,4 +1,3 @@
-'use server'
 
 import { Box, Flex, Text, Input, Button } from "@chakra-ui/react";
 import { InputGroup } from "@/components/ui/input-group";
@@ -11,10 +10,16 @@ import {
   ArrowTurnUpRightIcon,
   BookmarkIcon,
   FaceSmileIcon,
+  UserCircleIcon
 } from "@heroicons/react/24/outline";
 import { getAllPosts } from "@/lib/handler/post";
 import type { Post } from "@/lib/definition";
 import React from "react";
+import { daysFromToday } from "@/lib/utils";
+import Image from "next/image";
+import { CommentBox } from "./commentBox";
+import { Comments } from "./comments";
+import { Suspense } from "react";
 
 export async function EmojiButton() {
   return (
@@ -24,15 +29,12 @@ export async function EmojiButton() {
   );
 }
 
-
-
 export default async function Post(): Promise<React.ReactNode> {
+  const posts = await getAllPosts();
 
-    const posts = await getAllPosts();
-
-    return posts.map((post, i) => {
-      return (
-        <Box shadow="sm" bg="white" rounded="xl" p="5" key={i}>
+  return posts.map((post, i) => {
+    return (
+      <Box shadow="sm" bg="white" rounded="xl" p="5" key={i}>
         <Flex direction="col">
           <Box>
             <Flex direction={"row"} gap="4">
@@ -44,18 +46,24 @@ export default async function Post(): Promise<React.ReactNode> {
                 alignContent={"center"}
                 textAlign={"center"}
               >
-                d
+                 {
+                    post.user && typeof post.user.image == "string" ? (
+                      <Image src={post.user.image } alt="Profile Image" width={12}/>
+                    ):(
+                      <UserCircleIcon className="text-slate-500"/>
+                    )
+                  }
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">
                 <Box display="flex" gapX={4}>
                   <Text textStyle="sm" color="black" fontWeight={"semibold"}>
-                    Ray Hammond
+                    {post.user.name}
                   </Text>
                   <Text textStyle={"sm"} color="gray.500">
-                    2d Ago
+                    {daysFromToday(post.createdAt)} Ago
                   </Text>
                 </Box>
-                <Text textStyle={"sm"}>New York, United States</Text>
+                <Text textStyle={"sm"}>Location</Text>
               </Flex>
             </Flex>
           </Box>
@@ -64,12 +72,16 @@ export default async function Post(): Promise<React.ReactNode> {
           </Box>
         </Flex>
         <Box mt="3" mx="2" borderBottom={"1px solid black"} pb="5">
+          {/* {JSON.stringify(post)} */}
           <Text textStyle={"md"}>{post.description}</Text>
-    
-          <Flex direction="row" gapX="2" mt="3">
-            <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
-            <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
-          </Flex>
+          {post.images.length > 1 ? (
+            <Flex direction="row" gapX="2" mt="3">
+              <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
+              <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
+            </Flex>
+          ) : (
+            <></>
+          )}
         </Box>
         <Flex dir="row" p="4" borderBottom={"1px solid black"}>
           <Box flexBasis={"50%"} display="flex" flexDir={"row"} gapX="8">
@@ -82,10 +94,11 @@ export default async function Post(): Promise<React.ReactNode> {
             <BookmarkIcon className="size-7" />
           </Box>
         </Flex>
+
         <Flex p="4" direction={"row"}>
           <Box>
             <Text textStyle="md" fontWeight={"bold"}>
-              925 likes
+              {post.likes.length} likes
             </Text>
           </Box>
           <Box
@@ -96,28 +109,17 @@ export default async function Post(): Promise<React.ReactNode> {
             gapX="4"
           >
             <Box>
-              <Text textStyle={"md"}>22 Comments</Text>
-            </Box>
-            <Box>
-              <Text textStyle={"md"}>4 Reports</Text>
+              <Text textStyle={"md"}>{post.comments.length} Comments</Text>
             </Box>
           </Box>
         </Flex>
-        <Box p="2" >
-          <InputGroup flex="1" endElement={<EmojiButton />} w="full" >
-            <Input
-              placeholder="Add a comment..."
-              variant={"outline"}
-              border={"1px solid gray"}
-              px="4"
-              rounded="lg"
-            />
-          </InputGroup>
-        </Box>
-        </Box>
-      )
-    })
-   
-
-
+       <CommentBox postId={post.postId}/>
+       <Box m={2}>
+        <Suspense fallback={<Text>Loading...</Text>}>
+          <Comments postId={post.postId} limit={1} />
+        </Suspense>
+       </Box>
+      </Box>
+    );
+  });
 }
