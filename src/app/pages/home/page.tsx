@@ -12,7 +12,7 @@ import {
 import Events from "@/components/parts/events";
 import Post from "@/components/parts/post/post";
 import { EmojiButton } from "@/components/parts/post/post";
-import { createPost } from "@/lib/handler/post";
+
 import { Suspense } from "react";
 import MakePost from "./makepost";
 import { auth } from "@/auth";
@@ -27,7 +27,7 @@ export default async function Page() {
 
 
   return (
-    <>
+  
       <Flex
         direction={"row"}
         color={"black"}
@@ -47,7 +47,7 @@ export default async function Page() {
           <Events />
         </Box>
       </Flex>
-    </>
+ 
   );
 }
 

@@ -4,9 +4,15 @@ import { prisma } from "../prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
-import type { Post } from "../definition";
+import { getUserData } from "./user";
 
 export async function getAllPosts() {
+  const session = await auth();
+
+  const userData = await getUserData(session?.user?.email);
+
+  if(!userData) return null;
+
   const posts = await prisma.post.findMany({
     orderBy: {
       createdAt: "desc",
@@ -20,7 +26,14 @@ export async function getAllPosts() {
         },
       },
       images: true,
-      likes: true,
+      likes: {
+        select: {
+          userId: true
+        },
+        where: {
+          userId: userData?.id as string
+        }
+      },
       comments: true,
     },
   });
@@ -163,5 +176,39 @@ export async function getComments(postId: string, limit: number) {
 }
 
 export async function likePost(postId: string){
-  
+    const session = await auth();
+
+    const getUser = await getUserData(session?.user?.email);
+
+    if(!getUser) return null;
+
+    if(!session?.user) return null;
+
+    const getPost = await prisma.post.findFirst({
+      where: {
+        postId: postId
+      },
+    });
+
+    if(!getPost) return null;
+    
+    try{
+      const createLike = await prisma.like.create({
+        data: {
+          postId: getPost.postId as string,
+          userId: getUser?.id
+        }
+      });
+
+      console.log(createLike);
+      revalidatePath('/pages/home');
+    }catch(err){
+      if(err instanceof Error){
+        return {
+          success: false,
+          message: err.message
+        }
+      }
+    }
+    
 }

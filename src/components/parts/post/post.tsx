@@ -1,7 +1,4 @@
-
 import { Box, Flex, Text, Input, Button } from "@chakra-ui/react";
-import { InputGroup } from "@/components/ui/input-group";
-
 import {
   EllipsisHorizontalIcon,
   HandThumbUpIcon,
@@ -10,9 +7,9 @@ import {
   ArrowTurnUpRightIcon,
   BookmarkIcon,
   FaceSmileIcon,
-  UserCircleIcon
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { getAllPosts } from "@/lib/handler/post";
+import { getAllPosts, likePost } from "@/lib/handler/post";
 import type { Post } from "@/lib/definition";
 import React from "react";
 import { daysFromToday } from "@/lib/utils";
@@ -32,7 +29,13 @@ export async function EmojiButton() {
 export default async function Post(): Promise<React.ReactNode> {
   const posts = await getAllPosts();
 
-  return posts.map((post, i) => {
+  const handleLike = async (data: FormData) => {
+    "use server";
+    const postId = data.get("postId") as string;
+    await likePost(postId);
+  };
+
+  return posts?.map((post, i) => {
     return (
       <Box shadow="sm" bg="white" rounded="xl" p="5" key={i}>
         <Flex direction="col">
@@ -46,13 +49,11 @@ export default async function Post(): Promise<React.ReactNode> {
                 alignContent={"center"}
                 textAlign={"center"}
               >
-                 {
-                    post.user && typeof post.user.image == "string" ? (
-                      <Image src={post.user.image } alt="Profile Image" width={12}/>
-                    ):(
-                      <UserCircleIcon className="text-slate-500"/>
-                    )
-                  }
+                {post.user && typeof post.user.image == "string" ? (
+                  <Image src={post.user.image} alt="Profile Image" width={12} />
+                ) : (
+                  <UserCircleIcon className="text-slate-500" />
+                )}
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">
                 <Box display="flex" gapX={4}>
@@ -72,7 +73,6 @@ export default async function Post(): Promise<React.ReactNode> {
           </Box>
         </Flex>
         <Box mt="3" mx="2" borderBottom={"1px solid black"} pb="5">
-          {/* {JSON.stringify(post)} */}
           <Text textStyle={"md"}>{post.description}</Text>
           {post.images.length > 1 ? (
             <Flex direction="row" gapX="2" mt="3">
@@ -83,9 +83,35 @@ export default async function Post(): Promise<React.ReactNode> {
             <></>
           )}
         </Box>
-        <Flex dir="row" p="4" borderBottom={"1px solid black"}>
-          <Box flexBasis={"50%"} display="flex" flexDir={"row"} gapX="8">
-            <HandThumbUpIcon className="size-7" />
+        <Flex
+          dir="row"
+          px="4"
+          py={2}
+          borderBottom={"1px solid black"}
+          alignItems={"center"}
+        >
+          <Box
+            flexBasis={"50%"}
+            display="flex"
+            flexDir={"row"}
+            gapX="8"
+            alignItems={"center"}
+          >
+       
+            {post.likes.length > 0 ? (
+              <Button type={"button"}>
+                <HandThumbUpIcon className="size-7 text-red-500" />
+              </Button>
+            ) : (     
+                <form action={handleLike}>
+                  <Input type="hidden" name="postId" value={post.postId} />
+                  <Button type={"submit"}>
+                    <HandThumbUpIcon className="size-7" />
+                  </Button>
+                </form>
+        
+            )}
+         
             <ChatBubbleLeftIcon className="size-7" />
             <PaperAirplaneIcon className="size-7" />
           </Box>
@@ -113,12 +139,12 @@ export default async function Post(): Promise<React.ReactNode> {
             </Box>
           </Box>
         </Flex>
-       <CommentBox postId={post.postId}/>
-       <Box m={2}>
-        <Suspense fallback={<Text>Loading...</Text>}>
-          <Comments postId={post.postId} limit={1} />
-        </Suspense>
-       </Box>
+        <CommentBox postId={post.postId} />
+        <Box m={2}>
+          <Suspense fallback={<Text>Loading...</Text>}>
+            <Comments postId={post.postId} limit={1} />
+          </Suspense>
+        </Box>
       </Box>
     );
   });
