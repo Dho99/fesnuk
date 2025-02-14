@@ -59,13 +59,13 @@ export default function MakePost({session}: MakePostProps) {
                   textAlign={"center"}
                   alignContent={"center"}
                 >
-                  {
+                  {/* {
                     session && typeof session == "string" ? (
                       <Image src={session} alt="Profile Image" width={12}/>
-                    ):(
+                    ):( */}
                       <UserCircleIcon className="text-slate-500"/>
-                    )
-                  }
+                    {/* )
+                  } */}
                 </Box>
               </Box>
 

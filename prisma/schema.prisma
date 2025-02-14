@@ -20,6 +20,8 @@ model User {
   posts         Post[]
   comments      Comment[]
   savedPosts    SavedPost[]
+  likes Like[]
+
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -97,11 +99,12 @@ model Post{
 }
 
 model Like {
-  userId      String
+  id          String @unique @default(cuid())
+  users      User[]
   postId      String
 
   post Post @relation(fields: [postId], references: [postId])
-  @@id([userId, postId])
+  @@id([postId])
 
 }
 

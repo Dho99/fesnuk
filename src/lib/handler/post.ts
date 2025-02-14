@@ -11,7 +11,7 @@ export async function getAllPosts() {
 
   const userData = await getUserData(session?.user?.email);
 
-  if(!userData) return null;
+  if (!userData) return null;
 
   const posts = await prisma.post.findMany({
     orderBy: {
@@ -26,14 +26,7 @@ export async function getAllPosts() {
         },
       },
       images: true,
-      likes: {
-        select: {
-          userId: true
-        },
-        where: {
-          userId: userData?.id as string
-        }
-      },
+      likes: true,
       comments: true,
     },
   });
@@ -146,69 +139,92 @@ export async function getComments(postId: string, limit: number) {
       where: {
         postId: postId,
       },
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       take: limit,
       orderBy: {
-        createdAt: 'desc'
+        createdAt: "desc",
       },
       include: {
         author: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
-
 
     return {
       success: true,
-      data: comments
+      data: comments,
     };
   } catch (err) {
     if (err instanceof Error) {
       return {
         success: false,
-        message: err.message
+        message: err.message,
       };
     }
   }
 }
 
-export async function likePost(postId: string){
-    const session = await auth();
+export async function likePost(postId: string) {
+  const session = await auth();
 
-    const getUser = await getUserData(session?.user?.email);
+  const getUser = await getUserData(session?.user?.email);
 
-    if(!getUser) return null;
+  if (!getUser) return null;
 
-    if(!session?.user) return null;
+  if (!session?.user) return null;
 
-    const getPost = await prisma.post.findFirst({
-      where: {
-        postId: postId
+  const getPost = await prisma.post.findFirst({
+    where: {
+      postId: postId,
+    },
+  });
+
+  if (!getPost) return null;
+
+  try {
+    const createLike = await prisma.like.create({
+      data: {
+        postId: getPost.postId as string,
+        users: {
+          create: [{email: getUser.email as string}],
+        },
       },
     });
 
-    if(!getPost) return null;
-    
-    try{
-      const createLike = await prisma.like.create({
-        data: {
-          postId: getPost.postId as string,
-          userId: getUser?.id
-        }
-      });
-
-      console.log(createLike);
-      revalidatePath('/pages/home');
-    }catch(err){
-      if(err instanceof Error){
-        return {
-          success: false,
-          message: err.message
-        }
-      }
+    revalidatePath("/pages/home");
+  } catch (err) {
+    if (err instanceof Error) {
+      return {
+        success: false,
+        message: err.message,
+      };
     }
-    
+  }
 }
+
+export async function showLikes(postIdArg: string) {
+  const likes = await prisma.like.findFirst({
+    relationLoadStrategy: "join",
+    where: {
+      postId: postIdArg,
+    },
+  });
+
+  const data = null;
+
+  console.log(likes);
+  // return likes;
+}
+
+export const getUserById = async (userId: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  return user;
+};

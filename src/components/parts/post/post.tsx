@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Input, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, Input, Button, Center } from "@chakra-ui/react";
 import {
   EllipsisHorizontalIcon,
   HandThumbUpIcon,
@@ -17,6 +17,7 @@ import Image from "next/image";
 import { CommentBox } from "./commentBox";
 import { Comments } from "./comments";
 import { Suspense } from "react";
+import { PostAction } from "./postAction";
 
 export async function EmojiButton() {
   return (
@@ -49,11 +50,11 @@ export default async function Post(): Promise<React.ReactNode> {
                 alignContent={"center"}
                 textAlign={"center"}
               >
-                {post.user && typeof post.user.image == "string" ? (
+                {/* {post.user && typeof post.user.image == "string" ? (
                   <Image src={post.user.image} alt="Profile Image" width={12} />
                 ) : (
+                  )} */}
                   <UserCircleIcon className="text-slate-500" />
-                )}
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">
                 <Box display="flex" gapX={4}>
@@ -121,12 +122,8 @@ export default async function Post(): Promise<React.ReactNode> {
           </Box>
         </Flex>
 
-        <Flex p="4" direction={"row"}>
-          <Box>
-            <Text textStyle="md" fontWeight={"bold"}>
-              {post.likes.length} likes
-            </Text>
-          </Box>
+        <Flex p="4" direction={"row"} position={"relative"}>
+          <PostAction post={JSON.stringify(post)} actionType={"like"}/>
           <Box
             ms="auto"
             color={"gray.700"}
@@ -140,6 +137,7 @@ export default async function Post(): Promise<React.ReactNode> {
           </Box>
         </Flex>
         <CommentBox postId={post.postId} />
+
         <Box m={2}>
           <Suspense fallback={<Text>Loading...</Text>}>
             <Comments postId={post.postId} limit={1} />
