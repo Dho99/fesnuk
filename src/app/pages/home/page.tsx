@@ -16,14 +16,14 @@ import { EmojiButton } from "@/components/parts/post/post";
 import { Suspense } from "react";
 import MakePost from "./makepost";
 import { auth } from "@/auth";
-import { getUserPhoto } from "@/lib/handler/user";
+import { getUserProfile } from "@/lib/handler/user";
 
 export default async function Page() {
   const session = await auth();
 
   if(!session) return null;
 
-  const userProfile = await getUserPhoto(session.user?.email)
+  const userProfile = await getUserProfile(session?.user?.email)
 
 
   return (
@@ -36,10 +36,10 @@ export default async function Page() {
         justifyContent={{ lg: "start", md: "center", base: "center" }}
       >
         <Flex w={{ lg: "60%", md: "90%", base: "90%" }} direction={"column"}>
-          <MakePost session={userProfile}/>
+          <MakePost session={userProfile?.image}/>
           <Flex mt="5" mb="10" direction={"column"} gapY="5">
             <Suspense fallback={<PostShadow />}>
-              <Post />
+              <Post pageProps={userProfile}/>
             </Suspense>
           </Flex>
         </Flex>

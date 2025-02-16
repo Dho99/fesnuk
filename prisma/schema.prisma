@@ -20,7 +20,7 @@ model User {
   posts         Post[]
   comments      Comment[]
   savedPosts    SavedPost[]
-  likes Like[]
+  likedByUser   Like[]
 
 
   createdAt     DateTime        @default(now())
@@ -84,7 +84,7 @@ model Authenticator {
 }
 
 model Post{
-  postId        String @unique @default(cuid())
+  id        String @unique @default(cuid())
   description   String?
   images        PostImage[]
   createdAt     DateTime @default(now())
@@ -100,17 +100,19 @@ model Post{
 
 model Like {
   id          String @unique @default(cuid())
-  users      User[]
-  postId      String
+  userId      String
+  postId        String
 
-  post Post @relation(fields: [postId], references: [postId])
-  @@id([postId])
+  user User  @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+  @@id([id])
 
 }
 
+
 model PostImage {
   id          String @unique @default(cuid())
-  post        Post? @relation(fields: [postId], references: [postId])
+  post        Post? @relation(fields: [postId], references: [id])
   postId      String
   thumbnail   String
 }
@@ -132,5 +134,5 @@ model Comment {
   createdAt   DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id])
-  post Post @relation(fields: [postId], references: [postId])
+  post Post @relation(fields: [postId], references: [id])
 }

@@ -1,6 +1,6 @@
 import { prisma } from "../prisma"
 
-export async function getUserPhoto(email: string|undefined|null){
+export async function getUserProfile(email: string|undefined|null){
     const userProfile = await prisma.user.findFirst({
         where: {
             email: email as string
@@ -9,7 +9,7 @@ export async function getUserPhoto(email: string|undefined|null){
 
     if(!userProfile) return null;
 
-    return userProfile.image;
+    return userProfile;
 }
 
 export async function getUserData(email: string|undefined|null){

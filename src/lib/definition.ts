@@ -12,6 +12,7 @@ export type User = {
 }
 
 export type Post = {
+    id: string;
     user: {
       image: string | null;
       name: string | null;

@@ -10,7 +10,7 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { getAllPosts, likePost } from "@/lib/handler/post";
-import type { Post } from "@/lib/definition";
+import type { Post, User } from "@/lib/definition";
 import React from "react";
 import { daysFromToday } from "@/lib/utils";
 import Image from "next/image";
@@ -27,14 +27,14 @@ export async function EmojiButton() {
   );
 }
 
-export default async function Post(): Promise<React.ReactNode> {
-  const posts = await getAllPosts();
+type PageProps = {
+  pageProps: User | null;
+};
 
-  const handleLike = async (data: FormData) => {
-    "use server";
-    const postId = data.get("postId") as string;
-    await likePost(postId);
-  };
+export default async function Post({
+  pageProps,
+}: PageProps): Promise<React.ReactNode> {
+  const posts = await getAllPosts();
 
   return posts?.map((post, i) => {
     return (
@@ -54,7 +54,7 @@ export default async function Post(): Promise<React.ReactNode> {
                   <Image src={post.user.image} alt="Profile Image" width={12} />
                 ) : (
                   )} */}
-                  <UserCircleIcon className="text-slate-500" />
+                <UserCircleIcon className="text-slate-500" />
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">
                 <Box display="flex" gapX={4}>
@@ -98,21 +98,8 @@ export default async function Post(): Promise<React.ReactNode> {
             gapX="8"
             alignItems={"center"}
           >
-       
-            {post.likes.length > 0 ? (
-              <Button type={"button"}>
-                <HandThumbUpIcon className="size-7 text-red-500" />
-              </Button>
-            ) : (     
-                <form action={handleLike}>
-                  <Input type="hidden" name="postId" value={post.postId} />
-                  <Button type={"submit"}>
-                    <HandThumbUpIcon className="size-7" />
-                  </Button>
-                </form>
-        
-            )}
-         
+            <LikePost post={post} userData={pageProps} />
+
             <ChatBubbleLeftIcon className="size-7" />
             <PaperAirplaneIcon className="size-7" />
           </Box>
@@ -123,7 +110,7 @@ export default async function Post(): Promise<React.ReactNode> {
         </Flex>
 
         <Flex p="4" direction={"row"} position={"relative"}>
-          <PostAction post={JSON.stringify(post)} actionType={"like"}/>
+          <PostAction post={JSON.stringify(post)} actionType={"like"} />
           <Box
             ms="auto"
             color={"gray.700"}
@@ -136,14 +123,58 @@ export default async function Post(): Promise<React.ReactNode> {
             </Box>
           </Box>
         </Flex>
-        <CommentBox postId={post.postId} />
+        <CommentBox postId={post.id} />
 
         <Box m={2}>
           <Suspense fallback={<Text>Loading...</Text>}>
-            <Comments postId={post.postId} limit={1} />
+            <Comments postId={post.id} limit={1} />
           </Suspense>
         </Box>
       </Box>
     );
   });
+}
+
+type LikePostProps = {
+  userData: User | null;
+  post: Post | null;
+};
+
+export function LikePost({ userData, post }: LikePostProps) {
+  const handleLike = async (data: FormData) => {
+    "use server";
+    const postId = data.get("postId") as string;
+    const userEmail = userData?.email;
+    if (!userEmail) return;
+    await likePost(postId, userEmail);
+  };
+
+
+  if (post!.likes!.length > 0) {
+    return (
+      <>
+        {post?.likes.some((like) => like?.userId === userData?.id) ? (
+          <Button type={"button"}>
+            <HandThumbUpIcon className="size-7 text-red-500" />
+          </Button>
+        ) : (
+          <form action={handleLike}>
+            <Input type="hidden" name="postId" value={post?.id} />
+            <Button type={"submit"}>
+              <HandThumbUpIcon className="size-7" />
+            </Button>
+          </form>
+        )}
+      </>
+    );
+  } else {
+    return (
+      <form action={handleLike}>
+        <Input type="hidden" name="postId" value={post?.id} />
+        <Button type={"submit"}>
+          <HandThumbUpIcon className="size-7" />
+        </Button>
+      </form>
+    );
+  }
 }

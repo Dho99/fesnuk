@@ -97,7 +97,7 @@ export async function postComments(prevState: unknown, formData: FormData) {
     await prisma.comment.create({
       data: {
         description: validate.data as string,
-        postId: postId!.data!.postId as string,
+        postId: postId!.data!.id as string,
         authorId: getUserId!.id,
       },
     });
@@ -116,7 +116,7 @@ export async function findPost(id: string) {
   try {
     const postData = await prisma.post.findFirst({
       where: {
-        postId: argId as string,
+        id: argId as string,
       },
     });
     return {
@@ -167,32 +167,34 @@ export async function getComments(postId: string, limit: number) {
   }
 }
 
-export async function likePost(postId: string) {
-  const session = await auth();
+export async function likePost(postId: string, userEmail: string) {
 
-  const getUser = await getUserData(session?.user?.email);
+
+  const getUser = await getUserData(userEmail);
 
   if (!getUser) return null;
 
-  if (!session?.user) return null;
-
   const getPost = await prisma.post.findFirst({
     where: {
-      postId: postId,
+      id: postId,
     },
   });
 
   if (!getPost) return null;
 
   try {
-    const createLike = await prisma.like.create({
+    const cteLike = await prisma.like.create({
       data: {
-        postId: getPost.postId as string,
-        users: {
-          create: [{email: getUser.email as string}],
-        },
+        postId: getPost.id as string,
+        userId: getUser?.id as string
       },
     });
+
+    if(cteLike){
+      console.log("Posted")
+    }
+
+
 
     revalidatePath("/pages/home");
   } catch (err) {
