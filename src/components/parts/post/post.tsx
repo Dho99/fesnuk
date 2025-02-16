@@ -118,9 +118,8 @@ export default async function Post({
             flexDirection={"row"}
             gapX="4"
           >
-            <Box>
-              <Text textStyle={"md"}>{post.comments.length} Comments</Text>
-            </Box>
+          <PostAction post={JSON.stringify(post)} actionType={"comment"} />
+              {/* <Text textStyle={"md"}>{post.comments.length} Comments</Text> */}
           </Box>
         </Flex>
         <CommentBox postId={post.id} />

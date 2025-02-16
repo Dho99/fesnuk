@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { getUserData } from "./user";
+import { CommentProps } from "../definition";
 
 export async function getAllPosts() {
   const session = await auth();
@@ -133,7 +134,7 @@ export async function findPost(id: string) {
   }
 }
 
-export async function getComments(postId: string, limit: number) {
+export async function getComments(postId: string, limit: number): Promise<CommentProps[] | null> {
   try {
     const comments = await prisma.comment.findMany({
       where: {
@@ -153,17 +154,14 @@ export async function getComments(postId: string, limit: number) {
       },
     });
 
-    return {
-      success: true,
-      data: comments,
-    };
+
+    return comments;
   } catch (err) {
     if (err instanceof Error) {
-      return {
-        success: false,
-        message: err.message,
-      };
+      console.error(err.message);
+      return null;
     }
+    return null;
   }
 }
 
@@ -208,17 +206,25 @@ export async function likePost(postId: string, userEmail: string) {
 }
 
 export async function showLikes(postIdArg: string) {
-  const likes = await prisma.like.findFirst({
+  const likes = await prisma.like.findMany({
     relationLoadStrategy: "join",
     where: {
       postId: postIdArg,
     },
+    include: {
+      user: {
+        select: {
+          name: true,
+          image: true
+        }
+      }
+    }
   });
 
-  const data = null;
+
 
   console.log(likes);
-  // return likes;
+  return likes;
 }
 
 export const getUserById = async (userId: string) => {
