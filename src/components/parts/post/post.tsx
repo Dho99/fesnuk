@@ -15,7 +15,6 @@ import React from "react";
 import { daysFromToday } from "@/lib/utils";
 import Image from "next/image";
 import { CommentBox } from "./commentBox";
-import { Comments } from "./comments";
 import { Suspense } from "react";
 import { PostAction } from "./postAction";
 
@@ -49,12 +48,13 @@ export default async function Post({
                 rounded="full"
                 alignContent={"center"}
                 textAlign={"center"}
+                overflow={"hidden"}
               >
-                {/* {post.user && typeof post.user.image == "string" ? (
-                  <Image src={post.user.image} alt="Profile Image" width={12} />
+                {post.user && typeof post.user.image == "string" ? (
+                  <Image src={post.user.image} alt="Profile Image" width={60}  height={60}/>
                 ) : (
-                  )} */}
                 <UserCircleIcon className="text-slate-500" />
+                )}
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">
                 <Box display="flex" gapX={4}>
@@ -119,16 +119,8 @@ export default async function Post({
             gapX="4"
           >
           <PostAction post={JSON.stringify(post)} actionType={"comment"} />
-              {/* <Text textStyle={"md"}>{post.comments.length} Comments</Text> */}
           </Box>
         </Flex>
-        <CommentBox postId={post.id} />
-
-        <Box m={2}>
-          <Suspense fallback={<Text>Loading...</Text>}>
-            <Comments postId={post.id} limit={1} />
-          </Suspense>
-        </Box>
       </Box>
     );
   });

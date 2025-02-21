@@ -5,6 +5,7 @@ import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
+import { getUserData } from "./lib/handler/user";
 
 export const providerConfigs: Provider[] = [
   GitHub({
@@ -39,6 +40,12 @@ export const authConfig = {
         return Response.redirect(new URL("/pages/home", nextUrl));
       }
       return true;
+    },
+    jwt({ token, user }) {
+      if (user) { // User is available during sign-in
+        token.id = user.id
+      }
+      return token
     },
   },
 } satisfies NextAuthConfig;

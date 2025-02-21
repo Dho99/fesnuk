@@ -52,5 +52,6 @@ export type CommentProps = {
   createdAt: Date | null;
   author: {
     name: string | null;
+    image: string | null;
   }
 };

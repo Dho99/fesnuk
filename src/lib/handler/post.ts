@@ -102,7 +102,7 @@ export async function postComments(prevState: unknown, formData: FormData) {
         authorId: getUserId!.id,
       },
     });
-    revalidatePath("/pages/home");
+    return "Post Commented"
   } catch (err) {
     if (err instanceof Error) {
       return err.message;
@@ -149,6 +149,7 @@ export async function getComments(postId: string, limit: number): Promise<Commen
         author: {
           select: {
             name: true,
+            image: true,
           },
         },
       },

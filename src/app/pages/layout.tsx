@@ -11,6 +11,7 @@ export default function Layout({
     <Flex
       direction={"row"}
       maxH={"dvh"}
+      h={"dvh"}
       overflow={"hidden"}
       bgColor={"gray.200"}
       gapX={10}

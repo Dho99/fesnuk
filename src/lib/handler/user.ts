@@ -20,6 +20,5 @@ export async function getUserData(email: string|undefined|null){
     });
 
     if(!userProfile) return null;
-
     return userProfile;
 }
