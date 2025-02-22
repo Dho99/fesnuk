@@ -36,7 +36,7 @@ export default async function Page() {
         justifyContent={{ lg: "start", md: "center", base: "center" }}
       >
         <Flex w={{ lg: "60%", md: "90%", base: "90%" }} direction={"column"}>
-          {/* <MakePost session={userProfile?.image}/> */}
+          <MakePost session={userProfile?.image}/>
           <Flex mt="5" mb="10" direction={"column"} gapY="5">
             <Suspense fallback={<PostShadow />}>
               <Post pageProps={userProfile}/>

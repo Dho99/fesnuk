@@ -3,7 +3,7 @@
 import { Text, Box, Alert } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import Image from "next/image";
-import { ArrowUpIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ArrowUpIcon, TrashIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { updateUserData, deleteUser } from "@/lib/handler/user";
 import { CloseButton } from "@/components/ui/close-button";
 import { useActionState, useState } from "react";
@@ -65,6 +65,7 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
       flexDir={"column"}
       gapY={5}
     >
+      {/* {JSON.stringify(userData)} */}
          {uploadStatus.success ? (
          <Alert.Root
             status={uploadStatus.success ? "success" : "error"}
@@ -105,14 +106,13 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
             ) : (
               <>
                 {userData && userData.image ? (
-                  <Image
-                    src={userData.image}
-                    width={100}
-                    height={100}
-                    alt={"Profile Image"}
-                  />
+                  userData.image.startsWith('http') ? (
+                  <Image src={userData.image} alt="Profile Image" width={100} height={100} />
+                  ) : (
+                  <Image src={`/uploads/profile/${userData.image}`} alt="Profile Image" width={100} height={100} />
+                  )
                 ) : (
-                  <></>
+                  <UserCircleIcon className="text-slate-500" />
                 )}
               </>
             )}

@@ -50,10 +50,14 @@ export default async function Post({
                 textAlign={"center"}
                 overflow={"hidden"}
               >
-                {post.user && typeof post.user.image == "string" ? (
-                  <Image src={post.user.image} alt="Profile Image" width={60}  height={60}/>
+                {post.user && post.user.image ? (
+                  post.user.image.startsWith('http') ? (
+                  <Image src={post.user.image} alt="Profile Image" width={60} height={60} />
+                  ) : (
+                  <Image src={`/uploads/profile/${post.user.image}`} alt="Profile Image" width={60} height={60} />
+                  )
                 ) : (
-                <UserCircleIcon className="text-slate-500" />
+                  <UserCircleIcon className="text-slate-500" />
                 )}
               </Box>
               <Flex direction={"column"} my="auto" gapY="1">

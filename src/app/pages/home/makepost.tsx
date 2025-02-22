@@ -58,14 +58,17 @@ export default function MakePost({session}: MakePostProps) {
                   h={12}
                   textAlign={"center"}
                   alignContent={"center"}
+                  overflow={"hidden"}
                 >
-                  {/* {
-                    session && typeof session == "string" ? (
-                      <Image src={session} alt="Profile Image" width={12}/>
-                    ):( */}
-                      <UserCircleIcon className="text-slate-500"/>
-                    {/* )
-                  } */}
+                   {session && session ? (
+                      session.startsWith('http') ? (
+                      <Image src={session} alt="Profile Image" width={60} height={60} />
+                      ) : (
+                      <Image src={`/uploads/profile/${session}`} alt="Profile Image" width={60} height={60} />
+                      )
+                    ) : (
+                      <UserCircleIcon className="text-slate-500" />
+                    )}
                 </Box>
               </Box>
 

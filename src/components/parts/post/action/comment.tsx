@@ -23,7 +23,6 @@ export default function PostommentAction({ postData }: CommentActionProps) {
   
     const getCommentsData = async ()=> {
       const serverCommentsData: CommentProps[] | null = await getComments(postData!.id, 99);
-      // setCommentsData({ data: serverCommentsData, isOpened: true });
       router.refresh();
       setCommentsData(prev => ({
         ...prev,
@@ -80,11 +79,15 @@ export default function PostommentAction({ postData }: CommentActionProps) {
 
               <Flex flexDir={"row"} key={index} alignItems={"center"} gapX={"2"} bgColor={"black/5"} px={3} shadow={"xs"}>
                   <Box flexBasis={"10%"}>
-                    {data.author && typeof data.author.image == "string" ? (
-                        <Image src={data.author.image} alt="Profile Image" width={60}  height={60}/>
-                      ) : (
-                      <UserCircleIcon className="text-slate-500" />
-                    )}
+                  {data.author && data.author.image ? (
+                    data.author.image.startsWith('http') ? (
+                    <Image src={data.author.image} alt="Profile Image" width={60} height={60} />
+                    ) : (
+                    <Image src={`/uploads/profile/${data.author.image}`} alt="Profile Image" width={60} height={60} />
+                    )
+                  ) : (
+                    <UserCircleIcon className="text-slate-500" />
+                  )}
                   </Box>
                   <Box p={3}  rounded={"lg"} gap={2} display={"flex"} flexDir={"column"} flexBasis={"100%"}>
                       <Text textStyle={"md"} fontWeight={"semibold"} color={"black"}>{data.author.name}</Text>
