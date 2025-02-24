@@ -8,7 +8,7 @@ export default async function Page() {
   const userData = session?.user;
 
   return (
-    <Box maxW={"96%"} justifyContent={"center"} mx={{ lg: 0, base: "auto" }}>
+    <Box>
       <Text textStyle={"3xl"} fontWeight={"bold"} color={"black/80"}>
         Account Details
       </Text>

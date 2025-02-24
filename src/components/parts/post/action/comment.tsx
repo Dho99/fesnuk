@@ -49,8 +49,6 @@ export default function PostommentAction({ postData }: CommentActionProps) {
 
       {commentsData.isOpened && (
         <Box
-        maxW={"auto"}
-        minW={"500px"}
         h={"auto"}
         maxH={"400px"}
         overflowY={"auto"}
@@ -60,7 +58,7 @@ export default function PostommentAction({ postData }: CommentActionProps) {
         position={"absolute"}
         zIndex={"2"}
         top={"-200px"}
-        left={"-450px"}
+        left={{lg: "-400px", md: "-500px", sm: "-370px", base: "-140px"}}
         rounded={"lg"}
         shadow={"md"}
         >

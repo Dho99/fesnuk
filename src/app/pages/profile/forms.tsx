@@ -4,7 +4,7 @@ import { Text, Box, Alert } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import Image from "next/image";
 import { ArrowUpIcon, TrashIcon, UserCircleIcon } from "@heroicons/react/24/outline";
-import { updateUserData, deleteUser } from "@/lib/handler/user";
+import { updateUserData, deleteUser, removeProfileImage } from "@/lib/handler/user";
 import { CloseButton } from "@/components/ui/close-button";
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -51,6 +51,20 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
     message: null
   });
 
+  type RemoveImageRes = {success: boolean|null, message: string|null}
+
+  async function removeImage(){
+    if(confirm("Apakah anda ingin menghapus foto profil ? ")){
+
+      const userEmail = userData?.email;
+      const deleteProfile = await removeProfileImage(userEmail as string);
+      
+      if(deleteProfile){
+        setUploadStatus(deleteProfile)
+      }
+    }
+  }
+
   return (
     <Box
       placeContent={"center"}
@@ -65,7 +79,7 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
       flexDir={"column"}
       gapY={5}
     >
-      {/* {JSON.stringify(userData)} */}
+
          {uploadStatus.success ? (
          <Alert.Root
             status={uploadStatus.success ? "success" : "error"}
@@ -124,6 +138,7 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
             gap={"3"}
             position={"relative"}
             w={"full"}
+            justifyContent={{lg: "start", base: "center"}}
           >
             {isEditImage ? (
               <ImageForm closeState={closeState} imagePreview={imagePreview} setUploadStatus={setUploadStatus}/>
@@ -142,6 +157,7 @@ export default function ProfileForms({ userData }: ProfileFormProps) {
                   className={
                     "border text-slate-600 rounded-2xl border-slate-600 hover:bg-red-600 transition-all transition-duration-300 h-min py-3 px-6 hover:text-white flex items-center gap-x-3 hover:border-red-600"
                   }
+                  onClick={removeImage}
                 >
                   <TrashIcon className="size-5 font-bold" />
                   <Text>Remove Image</Text>

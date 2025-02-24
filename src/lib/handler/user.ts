@@ -169,3 +169,27 @@ export async function changeProfile(prevState: unknown, formData: FormData){
 
 
 }
+
+export const removeProfileImage = async(userEmail: string) => {
+  try{
+    await prisma.user.update({
+      where : {
+        email: userEmail as string
+      },
+      data: {
+        image: null
+      }
+    })
+    return {
+      success: true,
+      message: "Profile Image deleted"
+    }
+  }catch(err){
+    if(err instanceof Error){
+      return {
+        success: false,
+        message: err.message
+      }
+    }
+  }
+}

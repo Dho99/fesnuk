@@ -21,6 +21,9 @@ model User {
   comments      Comment[]
   savedPosts    SavedPost[]
   likedByUser   Like[]
+  chats         Chat[]
+  friends       Friend[]
+  friendLists   FriendList[]
 
 
   createdAt     DateTime        @default(now())
@@ -135,4 +138,39 @@ model Comment {
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+
+model Chat {
+  id      String @unique @default(cuid())
+  message String
+  userId  String
+  roomId  String
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+}
+
+model Room{
+  id      String @unique @default(cuid())
+  chats   Chat[]
+}
+
+model FriendList{
+  id  String @unique @default(cuid())
+  userId String
+  friends Friend[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Friend{
+  id  String @unique @default(cuid())
+  friendListId String
+  userId String
+
+  friend FriendList @relation(fields: [friendListId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  
 }

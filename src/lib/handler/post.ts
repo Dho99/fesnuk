@@ -224,7 +224,7 @@ export async function showLikes(postIdArg: string) {
 
 
 
-  console.log(likes);
+  // console.log(likes);
   return likes;
 }
 
@@ -237,3 +237,5 @@ export const getUserById = async (userId: string) => {
 
   return user;
 };
+
+

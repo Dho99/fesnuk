@@ -14,7 +14,7 @@ export default function Layout({
       h={"dvh"}
       overflow={"hidden"}
       bgColor={"gray.200"}
-      gapX={10}
+      gapX={5}
     >
       <Box
         hideBelow={"lg"}
@@ -27,7 +27,10 @@ export default function Layout({
         <Navbar />
       </Box>
       <Box flexBasis={"100%"} pt={10} overflowY="scroll" position={"relative"}>
+            <Box maxW={"98%"} justifyContent={"center"} mx={{ lg: 0, base: "auto" }}>
         {children}
+
+            </Box>
       </Box>
     </Flex>
   );

@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       position={"relative"}
     >
       <Box
-        w={{ xl: "98%", lg: "98%", md: "95%", sm: "95%", base: "95%" }}
+        w={"full"}
         h="90vh"
         bgColor={"white"}
         rounded="lg"
