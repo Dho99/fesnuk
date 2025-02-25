@@ -1,11 +1,11 @@
 "use server";
 
-import { prisma } from "./prisma";
+import { prisma } from "../prisma";
 import { z } from "zod";
-import type { User } from "./definition";
-import { userValidateSchema } from "./zodSchema";
-import { signIn } from "@/auth";
-import { hashPassword } from "./utils";
+import type { User } from "../definition";
+import { userValidateSchema } from "../zodSchema";
+import { signIn } from "@/lib/handler/auth";
+import { hashPassword } from "../utils";
 import { compare } from "bcrypt-ts";
 
 export async function getUser(formData: FormData) {

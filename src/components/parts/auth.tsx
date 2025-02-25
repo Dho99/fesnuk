@@ -9,7 +9,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { InputGroup } from "@/components/ui/input-group";
-import { authenticate, register } from "@/lib/signin";
+import { authenticate, register } from "@/lib/handler/signin";
 import { useActionState } from "react";
 
 export default function LoginForm(): React.ReactNode {
@@ -52,7 +52,7 @@ export default function LoginForm(): React.ReactNode {
         </>
       ) : (
         <>
-         {typeof errorRegister == "string" && (
+          {typeof errorRegister == "string" && (
             <Text color={"red.500"} textAlign={"center"}>
               {errorRegister}
             </Text>
@@ -199,7 +199,7 @@ export default function LoginForm(): React.ReactNode {
                 py={6}
                 type={"submit"}
 
-                // onClick={() => { register({ data: userData }) }}
+              // onClick={() => { register({ data: userData }) }}
               >
                 <Text textStyle={"lg"}>Register Now !</Text>
               </Button>

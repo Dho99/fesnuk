@@ -4,14 +4,14 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["relationJoins"]
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -21,10 +21,10 @@ model User {
   comments      Comment[]
   savedPosts    SavedPost[]
   likedByUser   Like[]
-  chats         Chat[]
+  messages      Message[]
   friends       Friend[]
   friendLists   FriendList[]
-
+  rooms         Room[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -86,43 +86,40 @@ model Authenticator {
   @@id([userId, credentialID])
 }
 
-model Post{
-  id        String @unique @default(cuid())
-  description   String?
-  images        PostImage[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  userId        String
-  comments      Comment[]
-  likes         Like[]
+model Post {
+  id          String      @unique @default(cuid())
+  description String?
+  images      PostImage[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userId      String
+  comments    Comment[]
+  likes       Like[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-
 }
 
 model Like {
-  id          String @unique @default(cuid())
-  userId      String
-  postId        String
+  id     String @unique @default(cuid())
+  userId String
+  postId String
 
-  user User  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@id([id])
-
 }
-
 
 model PostImage {
-  id          String @unique @default(cuid())
-  post        Post? @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  postId      String
-  thumbnail   String
+  id        String @unique @default(cuid())
+  post      Post?  @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId    String
+  thumbnail String
 }
 
-model SavedPost{
-  postId      String
-  userId      String
+model SavedPost {
+  postId String
+  userId String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
@@ -130,47 +127,50 @@ model SavedPost{
 }
 
 model Comment {
-  id          String @unique @default(cuid())
+  id          String   @unique @default(cuid())
   description String
   postId      String
   authorId    String
   createdAt   DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-
-model Chat {
-  id      String @unique @default(cuid())
-  message String
+model FriendList {
+  id      String   @unique @default(cuid())
   userId  String
-  roomId  String
-
-  user User @relation(fields: [userId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
-
-}
-
-model Room{
-  id      String @unique @default(cuid())
-  chats   Chat[]
-}
-
-model FriendList{
-  id  String @unique @default(cuid())
-  userId String
   friends Friend[]
 
   user User @relation(fields: [userId], references: [id])
 }
 
-model Friend{
-  id  String @unique @default(cuid())
+model Room {
+  id       String    @unique @default(cuid())
+  userId   String
+  messages Message[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id       String   @default(cuid())
+  message  String
+  senderId String
+  sent_at  DateTime
+  roomId   String
+
+  sender User @relation(fields: [senderId], references: [id])
+  room   Room @relation(fields: [roomId], references: [id])
+
+  @@id([id])
+}
+
+model Friend {
+  id           String @unique @default(cuid())
   friendListId String
-  userId String
+  userId       String
 
   friend FriendList @relation(fields: [friendListId], references: [id])
-  user User @relation(fields: [userId], references: [id])
-  
+  user   User       @relation(fields: [userId], references: [id])
 }

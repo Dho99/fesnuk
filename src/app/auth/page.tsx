@@ -5,9 +5,9 @@ import GoogleIcon from "@/../public/icons/googleIcon.png";
 import FacebookIcon from "@/../public/icons/facebookIcon.png";
 import GithubIcon from "@/../public/icons/githubIcon.png";
 import LoginForm from "@/components/parts/auth";
-import { auth } from "@/auth";
+import { auth } from "@/lib/handler/auth";
 
-import { signIn } from "@/auth";
+import { signIn } from "@/lib/handler/auth";
 
 export default async function Page() {
   const session = await auth()
@@ -34,12 +34,12 @@ export default async function Page() {
         py={10}
         px={"3em"}
         shadow="md"
-        
-        >
+
+      >
         {/* {JSON.stringify(session)} */}
 
         <LoginForm />
-       
+
         <Flex
           flexDir={{ lg: "row", md: "column", base: "column" }}
           gap="4"
@@ -60,7 +60,7 @@ export default async function Page() {
               }}
             >
               <Button border={"1px solid"} type="submit" w="full" rounded="lg" py="2" px="10">
-              <Image priority src={GithubIcon} alt="Github Icon" width={25} />
+                <Image priority src={GithubIcon} alt="Github Icon" width={25} />
               </Button>
             </form>
           </Box>

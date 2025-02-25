@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 type Menu = {
   icon: typeof ChatBubbleLeftRightIcon
-  menuName: String
+  menuName: string
   href: string
 };
 
@@ -34,22 +34,22 @@ const mainMenu: Menu[] = [
   {
     icon: UsersIcon,
     menuName: "People",
-     href: '#',
+    href: '#',
   },
   {
     icon: NewspaperIcon,
     menuName: "Feed",
-     href: '#',
+    href: '#',
   },
   {
     icon: UserCircleIcon,
     menuName: "Profile",
-     href: '/profile'
+    href: '/profile'
   },
   {
     icon: Cog6ToothIcon,
     menuName: "Settings",
-     href: '/settings'
+    href: '/settings'
   },
 ];
 
@@ -57,32 +57,32 @@ const exploreMenu: Menu[] = [
   {
     icon: DeviceTabletIcon,
     menuName: "Pages",
-     href: "/home",
+    href: "/home",
   },
   {
     icon: CalendarDaysIcon,
     menuName: "Events",
-     href: "#",
+    href: "#",
   },
   {
     icon: BriefcaseIcon,
     menuName: "Jobs",
-     href: "#",
+    href: "#",
   },
   {
     icon: FolderArrowDownIcon,
     menuName: "Groups",
-     href: "#",
+    href: "#",
   },
   {
     icon: BookmarkIcon,
     menuName: "Saved",
-     href: "#",
+    href: "#",
   },
   {
     icon: HandThumbUpIcon,
     menuName: "Recommendations",
-     href: "#",
+    href: "#",
   },
   {
     icon: FolderOpenIcon,
@@ -95,7 +95,7 @@ const exploreMenu: Menu[] = [
 
 export default function Navbar() {
   const router = useRouter();
-  
+
 
   return (
     <Box minHeight={"dvh"} bgColor={"white"} px={5}>
@@ -120,7 +120,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
-            onClick={() =>  {router.push(`/pages/${menu.href}`)}}
+            onClick={() => { router.push(`/pages/${menu.href}`) }}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />
@@ -140,7 +140,7 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
-            onClick={() => {router.push(`/pages/${menu.href}`)}}
+            onClick={() => { router.push(`/pages/${menu.href}`) }}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />
@@ -148,7 +148,7 @@ export default function Navbar() {
             </Flex>
           </Link>
         ))}
-      
+
       </Flex>
     </Box>
   );

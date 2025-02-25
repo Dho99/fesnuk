@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/handler/auth";
 import ProfileForms from "./forms";
 import { Box, Center, Text } from "@chakra-ui/react";
 

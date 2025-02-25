@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "../prisma";
-import { auth } from "@/auth";
+import { auth } from "@/lib/handler/auth";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { getUserData } from "./user";
@@ -189,7 +189,7 @@ export async function likePost(postId: string, userEmail: string) {
       },
     });
 
-    if(cteLike){
+    if (cteLike) {
       console.log("Posted")
     }
 

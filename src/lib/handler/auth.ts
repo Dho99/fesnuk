@@ -4,8 +4,8 @@ import type { Provider } from "next-auth/providers";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "./lib/prisma";
-import { getUserData } from "./lib/handler/user";
+import { prisma } from "../prisma";
+import { getUserData } from "./user";
 
 export const providerConfigs: Provider[] = [
   GitHub({
@@ -14,7 +14,7 @@ export const providerConfigs: Provider[] = [
 
   }),
   Credentials({
-    authorize: async(credentials) => {
+    authorize: async (credentials) => {
       return credentials
     }
   })

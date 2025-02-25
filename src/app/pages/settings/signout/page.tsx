@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/auth";
+import { signOut } from "@/lib/handler/auth";
 
 export default async function Logout() {
   return (
@@ -23,9 +23,9 @@ export default async function Logout() {
           >
             Tetap Disini
           </Button>
-          <form action={async() => {
+          <form action={async () => {
             "use server"
-            await signOut({redirectTo: '/auth'})
+            await signOut({ redirectTo: '/auth' })
           }}>
             <Button
               variant="solid"
