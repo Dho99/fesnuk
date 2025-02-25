@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Box, Text, Button, Textarea } from "@chakra-ui/react";
+import { Flex, Box, Button, Textarea } from "@chakra-ui/react";
 import {
   FaceSmileIcon,
   PhotoIcon,
@@ -12,14 +12,14 @@ import { createPost } from "@/lib/handler/post";
 import Image from "next/image";
 
 type MakePostProps = {
-  session: string|null|undefined
+  session: string | null | undefined
 }
 
-export default function MakePost({session}: MakePostProps) {
+export default function MakePost({ session }: MakePostProps) {
 
   const [errorMessage, submitHandler] = useActionState(
-    async(state: unknown, payload: FormData) => {
-      if(payload === null){
+    async (state: unknown, payload: FormData) => {
+      if (payload === null) {
         return null;
       }
 
@@ -33,72 +33,72 @@ export default function MakePost({session}: MakePostProps) {
 
   return (
     <>
-          {
-            typeof errorMessage == "string" && (
-              <Box w="" bgColor={"red.500"} p={4} rounded={"lg"} mb={5} color={"white"}>{errorMessage}</Box>
-            )
-          }
+      {
+        typeof errorMessage == "string" && (
+          <Box w="" bgColor={"red.500"} p={4} rounded={"lg"} mb={5} color={"white"}>{errorMessage}</Box>
+        )
+      }
 
-          <form ref={formRef} action={submitHandler}>
-            <Flex
-              direction={"row"}
-              bg={"white"}
-              px="5"
-              py="4"
-              rounded="xl"
-              shadow="xs"
-              alignItems={"center"}
-              gap={2}
+      <form ref={formRef} action={submitHandler}>
+        <Flex
+          direction={"row"}
+          bg={"white"}
+          px="5"
+          py="4"
+          rounded="xl"
+          shadow="xs"
+          alignItems={"center"}
+          gap={2}
+        >
+          <Box flexBasis={"10%"}>
+            <Box
+              bgColor={"gray.300"}
+              rounded={"full"}
+              w={12}
+              h={12}
+              textAlign={"center"}
+              alignContent={"center"}
+              overflow={"hidden"}
             >
-              <Box flexBasis={"10%"}>
-                <Box
-                  bgColor={"gray.300"}
-                  rounded={"full"}
-                  w={12}
-                  h={12}
-                  textAlign={"center"}
-                  alignContent={"center"}
-                  overflow={"hidden"}
-                >
-                   {session && session ? (
-                      session.startsWith('http') ? (
-                      <Image src={session} alt="Profile Image" width={60} height={60} />
-                      ) : (
-                      <Image src={`/uploads/profile/${session}`} alt="Profile Image" width={60} height={60} />
-                      )
-                    ) : (
-                      <UserCircleIcon className="text-slate-500" />
-                    )}
-                </Box>
-              </Box>
+              {session && session ? (
+                session.startsWith('http') ? (
+                  <Image src={session} alt="Profile Image" width={60} height={60} />
+                ) : (
+                  <Image src={`/uploads/profile/${session}`} alt="Profile Image" width={60} height={60} />
+                )
+              ) : (
+                <UserCircleIcon className="text-slate-500" />
+              )}
+            </Box>
+          </Box>
 
-              <Box flexBasis={"70%"} alignContent={"center"} display={"flex"}>
-                <Textarea
-                  resize={"none"}
-                  w="100%"
-                  placeholder="What's New ?"
-                  alignContent={"center"}
-                  px="2"
-                  textStyle={"lg"}
-                  name={"description"}
-                />
-              </Box>
-              <Box flexBasis={"20%"} alignContent={"center"} ms={"auto"}>
-                <Flex
-                  direction="row"
-                  gapX={5}
-                  display={"flex"}
-                  alignItems={"center"}
-                >
-                  <FaceSmileIcon className="size-8" />
-                  <PhotoIcon className="size-8" />
-                  <Button type="submit">
-                    <PaperAirplaneIcon className="size-8 " />
-                  </Button>
-                </Flex>
-              </Box>
+          <Box flexBasis={"70%"} alignContent={"center"} display={"flex"}>
+            <Textarea
+              resize={"none"}
+              w="100%"
+              placeholder="What's New ?"
+              alignContent={"center"}
+              px="2"
+              textStyle={"lg"}
+              name={"description"}
+            />
+          </Box>
+          <Box flexBasis={"20%"} alignContent={"center"} ms={"auto"}>
+            <Flex
+              direction="row"
+              gapX={5}
+              display={"flex"}
+              alignItems={"center"}
+            >
+              <FaceSmileIcon className="size-8" />
+              <PhotoIcon className="size-8" />
+              <Button type="submit">
+                <PaperAirplaneIcon className="size-8 " />
+              </Button>
             </Flex>
-          </form>
+          </Box>
+        </Flex>
+      </form>
     </>
   );
 }

@@ -207,3 +207,19 @@ export async function getUserDataSession() {
 
   return user;
 }
+
+export async function getPeoples(skip: number, take: number) {
+  const userData = await getUserDataSession();
+
+  const peoples = await prisma.user.findMany({
+    where: {
+      NOT: {
+        id: userData?.id
+      }
+    },
+    skip: skip,
+    take: take
+  });
+
+  return peoples;
+}

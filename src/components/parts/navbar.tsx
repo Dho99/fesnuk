@@ -34,7 +34,7 @@ const mainMenu: Menu[] = [
   {
     icon: UsersIcon,
     menuName: "People",
-    href: '#',
+    href: '/people',
   },
   {
     icon: NewspaperIcon,

@@ -1,6 +1,5 @@
-import { Flex, Box, Link } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import Navbar from "@/components/parts/navbar";
-import Menu from "@/components/settings/menu";
 
 export default function Layout({
   children,
@@ -27,10 +26,9 @@ export default function Layout({
         <Navbar />
       </Box>
       <Box flexBasis={"100%"} pt={10} overflowY="scroll" position={"relative"}>
-            <Box maxW={"98%"} justifyContent={"center"} mx={{ lg: 0, base: "auto" }}>
-        {children}
-
-            </Box>
+        <Box maxW={"98%"} justifyContent={"center"} mx={{ lg: 0, base: "auto" }}>
+          {children}
+        </Box>
       </Box>
     </Flex>
   );
