@@ -223,3 +223,22 @@ export async function getPeoples(skip: number, take: number) {
 
   return peoples;
 }
+
+
+
+export async function getUserIdSession() {
+  const session = await auth();
+
+  if (!session) return null;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.id as string
+    },
+    select: {
+      id: true
+    }
+  })
+
+  return user;
+}

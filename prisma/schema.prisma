@@ -171,6 +171,6 @@ model Friend {
   friendListId String
   userId       String
 
-  friend FriendList @relation(fields: [friendListId], references: [id])
-  user   User       @relation(fields: [userId], references: [id])
+  friendlist FriendList @relation(fields: [friendListId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
 }

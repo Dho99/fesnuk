@@ -1,36 +1,38 @@
-'use client'
+"use client";
 
 import { getPeoples } from "@/lib/handler/user";
+import { getUserFriend, addFriend } from "@/lib/handler/friend";
 import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react"
-import type { User } from "@/lib/definition";
-
+import { useState, useEffect } from "react";
+import type { User, FriendList } from "@/lib/definition";
 
 export default function Page() {
-    const [peoples, setPeoples] = useState<null | User[]>(null)
+    const [peoples, setPeoples] = useState<null | User[]>(null);
+    const [friends, setFriends] = useState<null | FriendList>(null);
+    const [addFriendRes, setAddFriendRes] = useState<null | { success: boolean, message: string }>(null);
 
     const getPeoplesData = async (limit: number, take: number) => {
         const peoplesData = await getPeoples(limit, take);
 
         if (!peoplesData) return;
 
-        setPeoples(prev => ([
-            ...(prev || []),
-            ...peoplesData
-        ]));
-
-    }
+        setPeoples((prev) => [...(prev || []), ...peoplesData]);
+    };
 
     useEffect(() => {
         const getData = async () => {
             await getPeoplesData(0, 10);
-        }
+            await getUserFriend();
+        };
 
         getData();
-    }, [])
+    }, []);
 
+    async function addUserFriend(id: string) {
+        const userAddFriend = await addFriend(id);
+    }
 
     return (
         <Box w={"full"}>
@@ -64,9 +66,9 @@ export default function Page() {
                 >
                     <input
                         type="text"
-                        className="border border-slate-600 p-2 bg-transparent w-full text-black rounded-lg"
+                        className="border border-slate-600 bg-transparent w-full text-black rounded-lg px-5"
                     />
-                    <button className="rounded-lg text-white bg-slate-800 md:w-1/4 sm:w-full p-3 hover:shadow-lg">
+                    <button className="rounded-lg text-white bg-slate-800 md:w-1/4 sm:w-full p-2 hover:shadow-lg">
                         Find User
                     </button>
                 </Box>
@@ -76,8 +78,7 @@ export default function Page() {
                         {peoples!.map((people, index) => (
                             <Box
                                 key={index}
-                                w={"3/4"}
-                                h={"10vh"}
+                                w={{ md: "3/4", base: "full" }}
                                 bgColor={"white"}
                                 mx={"auto"}
                                 shadow={"sm"}
@@ -85,18 +86,52 @@ export default function Page() {
                                 color={"black"}
                                 display={"flex"}
                                 flexDir={"row"}
-
+                                py={3}
+                                px={5}
+                                gap={7}
                             >
-                                {people.image ? (
-                                    people.image?.startsWith('http') ? (
-                                        <Image src={people.image} alt="Profile Image" width={60} height={60} />
+                                <Box rounded={"full"} overflow={"hidden"}>
+                                    {people.image ? (
+                                        people.image?.startsWith("http") ? (
+                                            <Image
+                                                src={people.image}
+                                                alt="Profile Image"
+                                                width={100}
+                                                height={100}
+                                            />
+                                        ) : (
+                                            <Image
+                                                src={`/uploads/profile/${people.image}`}
+                                                alt="Profile Image"
+                                                width={100}
+                                                height={100}
+                                            />
+                                        )
                                     ) : (
-                                        <Image src={`/uploads/profile/${people.image}`} alt="Profile Image" width={60} height={60} />
-                                    )
-                                ) : (
-                                    <UserCircleIcon className="text-slate-500" />
-                                )}
-                                {JSON.stringify(people)}
+                                        <UserCircleIcon className="text-slate-500" />
+                                    )}
+                                </Box>
+                                <Box display={"flex"} flexDir={"column"} gapY={1}>
+                                    <Text textStyle={"2xl"} fontWeight={"bold"}>
+                                        {people.name}
+                                    </Text>
+                                    <Text textStyle={"lg"} fontWeight={""}>
+                                        {people.email}
+                                    </Text>
+                                </Box>
+                                { }
+                                <Box w={"full"} display={"flex"} m={"auto"}>
+                                    <button
+                                        className="bg-slate-800 ms-auto p-3 rounded-xl text-white"
+                                        onClick={() => {
+                                            addUserFriend(people.id);
+                                        }}
+                                    >
+                                        Add Friend
+                                    </button>
+                                </Box>
+
+                                {/* {JSON.stringify(people)} */}
                             </Box>
                         ))}
                     </>

@@ -55,3 +55,20 @@ export type CommentProps = {
     image: string | null;
   }
 };
+
+
+export type Friend = {
+  id: string;
+  friendListId: string | null
+  userId: string
+  user: User | null
+
+}
+
+export type FriendList = {
+  id: string;
+  userId: string
+  friends: Friend[]
+  user: User | null
+
+}
