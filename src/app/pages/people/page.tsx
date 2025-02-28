@@ -18,13 +18,17 @@ export default function Page() {
 
         if (!peoplesData) return;
 
-        setPeoples((prev) => [...(prev || []), ...peoplesData]);
+        setPeoples(peoplesData);
     };
+
+    const getFriendsData = () => {
+        const friendsData = await getUserFriend();
+    }
 
     useEffect(() => {
         const getData = async () => {
             await getPeoplesData(0, 10);
-            await getUserFriend();
+            await getFriendsData();
         };
 
         getData();
@@ -32,6 +36,10 @@ export default function Page() {
 
     async function addUserFriend(id: string) {
         const userAddFriend = await addFriend(id);
+
+        if (userAddFriend) {
+            setAddFriendRes(userAddFriend);
+        }
     }
 
     return (
@@ -53,6 +61,14 @@ export default function Page() {
                 flexDir={"column"}
                 gapY={5}
             >
+                {
+                    addFriendRes ? (
+                        <Box w={{ md: "3/4", base: "full" }} mx={"auto"} rounded={"lg"} p={4} bgColor={addFriendRes?.success ? "green/70" : "red/70"}>
+                            {addFriendRes?.message}
+                        </Box>
+                    ) : (<></>)
+                }
+
                 <Box
                     shadow={"sm"}
                     bg={"white"}
@@ -72,7 +88,6 @@ export default function Page() {
                         Find User
                     </button>
                 </Box>
-
                 {peoples && peoples!.length > 0 ? (
                     <>
                         {peoples!.map((people, index) => (

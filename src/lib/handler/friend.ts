@@ -26,7 +26,7 @@ export async function addFriend(userId: string) {
 
     if (!userSessionId) return null;
 
-    const getFriendListId = await prisma.friendList.findFirst({
+    let getFriendListId = await prisma.friendList.findFirst({
         where: {
             userId: userId
         },
@@ -35,11 +35,25 @@ export async function addFriend(userId: string) {
         }
     })
 
+    if (!getFriendListId) {
+        const createFriendList = await prisma.friendList.create({
+            data: {
+                userId: userSessionId?.id as string
+            }
+        });
+
+        getFriendListId = { id: createFriendList.id };
+
+
+    };
+
+
+
     try {
         await prisma.friend.create({
             data: {
                 friendListId: getFriendListId?.id as string,
-                userId: userSessionId?.id
+                userFriendId: userSessionId?.id
             }
         });
 

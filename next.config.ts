@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['avatars.githubusercontent.com'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/auth',
+        permanent: false
+      }
+    ]
+  }
 };
 
 export default nextConfig;
