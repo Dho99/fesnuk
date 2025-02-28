@@ -4,14 +4,10 @@ import Image from "next/image";
 import GoogleIcon from "@/../public/icons/googleIcon.png";
 import FacebookIcon from "@/../public/icons/facebookIcon.png";
 import GithubIcon from "@/../public/icons/githubIcon.png";
-import LoginForm from "@/components/parts/auth";
-import { auth } from "@/lib/handler/auth";
-
+import LoginForm from "@/components/parts/auth";;
 import { signIn } from "@/lib/handler/auth";
 
-export default async function Page() {
-  const session = await auth()
-
+export default function Page() {
   return (
     <Box
       w="full"
