@@ -8,15 +8,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "../prisma";
 
 export const providerConfigs: Provider[] = [
-  GitHub, Google,
-  // GitHub({
-  //   clientId: process.env.AUTH_GITHUB_ID,
-  //   clientSecret: process.env.AUTH_GITHUB_SECRET,
-  // }),
-  // Google({
-  //   clientId: process.env.AUTH_GOOGLE_ID,
-  //   clientSecret: process.env.AUTH_GOOGLE_SECRET,
-  // }),
+  GitHub({
+    clientId: process.env.AUTH_GITHUB_ID,
+    clientSecret: process.env.AUTH_GITHUB_SECRET,
+  }),
+  Google({
+    clientId: process.env.AUTH_GOOGLE_ID,
+    clientSecret: process.env.AUTH_GOOGLE_SECRET,
+  }),
   Credentials({
     authorize: async (credentials) => {
       return credentials;
