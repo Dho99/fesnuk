@@ -2,12 +2,12 @@ import { Box, Flex, Button } from "@chakra-ui/react";
 
 import Image from "next/image";
 import GoogleIcon from "@/../public/icons/googleIcon.png";
-import FacebookIcon from "@/../public/icons/facebookIcon.png";
 import GithubIcon from "@/../public/icons/githubIcon.png";
-import LoginForm from "@/components/parts/auth";;
-import { signIn } from "@/lib/handler/auth";
+import LoginForm from "@/components/parts/auth";
+import { signIn, providerMap } from "@/lib/handler/auth";
 
 export default function Page() {
+
   return (
     <Box
       w="full"
@@ -30,7 +30,6 @@ export default function Page() {
         py={10}
         px={"3em"}
         shadow="md"
-
       >
         {/* {JSON.stringify(session)} */}
 
@@ -41,25 +40,38 @@ export default function Page() {
           gap="4"
           justifyContent={"center"}
         >
-          {/* <ProviderSignIn /> */}
-          <Button border={"1px solid"} rounded="lg" py="2" px="10">
-            <Image priority src={GoogleIcon} alt="Google Icon" width={25} />
-          </Button>
-          <Button border={"1px solid"} rounded="lg" py="2" px="10">
-            <Image priority src={FacebookIcon} alt="Facebook Icon" width={25} />
-          </Button>
-          <Box>
+          {/* {JSON.stringify(providerMap)} */}
+
+          {Object.values(providerMap).map((provider, index) => (
             <form
-              onSubmit={async () => {
-                "use server"
-                await signIn("github");
+              key={index}
+              action={async () => {
+                "use server";
+                try {
+                  await signIn(provider.id);
+                } catch (error) {
+                  throw error;
+                }
               }}
             >
-              <Button border={"1px solid"} type="submit" w="full" rounded="lg" py="2" px="10">
-                <Image priority src={GithubIcon} alt="Github Icon" width={25} />
+              <Button
+                border={"1px solid"}
+                type="submit"
+                w="full"
+                rounded="lg"
+                py="2"
+                px="10"
+              >
+                <Image
+                  priority
+                  src={provider.name == "GitHub" ? GithubIcon : provider.name == "Google" ? GoogleIcon : ""}
+                  alt="Github Icon"
+                  width={25}
+                  height={25}
+                />
               </Button>
             </form>
-          </Box>
+          ))}
         </Flex>
       </Flex>
     </Box>
