@@ -1,16 +1,24 @@
 "use client";
 
 import { getPeoples } from "@/lib/handler/user";
-import { getUserFriend, addFriend } from "@/lib/handler/friend";
+import { getUserFriend, addFriend, removeFriend } from "@/lib/handler/friend";
 import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import type { User, FriendList } from "@/lib/definition";
+import type { User } from "@/lib/definition";
+
+type FriendProps = {
+    id: string,
+    userId: string,
+    friends: {
+        userFriendId: string,
+    }[],
+}
 
 export default function Page() {
     const [peoples, setPeoples] = useState<null | User[]>(null);
-    const [friends, setFriends] = useState<null | FriendList>(null);
+    const [friends, setFriends] = useState<null | FriendProps>(null);
     const [addFriendRes, setAddFriendRes] = useState<null | { success: boolean, message: string }>(null);
 
     const getPeoplesData = async (limit: number, take: number) => {
@@ -21,8 +29,20 @@ export default function Page() {
         setPeoples(peoplesData);
     };
 
-    const getFriendsData = () => {
+    const getFriendsData = async () => {
         const friendsData = await getUserFriend();
+        setFriends(friendsData);
+    }
+
+    const removeUserFriend = async (id: string) => {
+        if (confirm("Are you sure want to delete this friend from friendlist ? ")) {
+            const serverRemoveFriend = await removeFriend(id)
+
+            if (serverRemoveFriend) {
+                await getFriendsData();
+                setAddFriendRes(serverRemoveFriend)
+            }
+        }
     }
 
     useEffect(() => {
@@ -38,6 +58,7 @@ export default function Page() {
         const userAddFriend = await addFriend(id);
 
         if (userAddFriend) {
+            getFriendsData();
             setAddFriendRes(userAddFriend);
         }
     }
@@ -105,6 +126,7 @@ export default function Page() {
                                 px={5}
                                 gap={7}
                             >
+                                {/* {JSON.stringify(people.id)} */}
                                 <Box rounded={"full"} overflow={"hidden"}>
                                     {people.image ? (
                                         people.image?.startsWith("http") ? (
@@ -134,16 +156,28 @@ export default function Page() {
                                         {people.email}
                                     </Text>
                                 </Box>
-                                { }
                                 <Box w={"full"} display={"flex"} m={"auto"}>
-                                    <button
-                                        className="bg-slate-800 ms-auto p-3 rounded-xl text-white"
-                                        onClick={() => {
-                                            addUserFriend(people.id);
-                                        }}
-                                    >
-                                        Add Friend
-                                    </button>
+                                    {
+                                        friends?.friends.some((friend) => friend.userFriendId === people.id) ? (
+                                            <button
+                                                className="bg-red-600 ms-auto p-3 rounded-xl text-white"
+                                                onClick={() => {
+                                                    removeUserFriend(people.id);
+                                                }}
+                                            >
+                                                Remove Friend
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="bg-slate-800 ms-auto p-3 rounded-xl text-white"
+                                                onClick={() => {
+                                                    addUserFriend(people.id);
+                                                }}
+                                            >
+                                                Add Friend
+                                            </button>
+                                        )
+                                    }
                                 </Box>
 
                                 {/* {JSON.stringify(people)} */}

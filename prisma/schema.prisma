@@ -164,7 +164,7 @@ model Friend {
   userFriendId String
 
   friendlist FriendList @relation(fields: [friendListId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  friendId   User       @relation(fields: [userFriendId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  friendData User       @relation(fields: [userFriendId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model FriendList {

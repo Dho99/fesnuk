@@ -36,7 +36,7 @@ export async function getUserData(email: string | undefined | null) {
   return userProfile;
 }
 
-export async function updateUserData(prevState: unknown, formData: FormData) {
+export async function updateUserData(formData: FormData) {
   // Mengambil data dari FormData
   const userForm = {
     email: formData.get("email") as string,
@@ -62,6 +62,7 @@ export async function updateUserData(prevState: unknown, formData: FormData) {
       message: validation.error.errors.map((err) => err.message).join(", "),
     };
   }
+
 
   validation.data.password = await hashPassword(validation.data.password);
   try {
@@ -99,7 +100,7 @@ export async function deleteUser(userEmail: string) {
   })
 }
 
-export async function changeProfile(prevState: unknown, formData: FormData) {
+export async function changeProfile(formData: FormData) {
   const imageFile = formData.get("image") as File;
 
   const imageValidateSchema = z.object({
