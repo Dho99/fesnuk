@@ -72,3 +72,22 @@ export type FriendList = {
   user: User | null
 
 }
+
+export type Message = {
+  id: string | null;
+  message: string | null;
+  senderId: string | null;
+  sent_at: Date;
+  roomId: string | null;
+  room: {
+    id: string | null;
+    userId: string | null;
+  },
+  sender: User | null
+
+}
+
+export type Room = {
+  id: string,
+  userId: string
+}

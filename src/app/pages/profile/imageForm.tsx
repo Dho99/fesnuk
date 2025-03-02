@@ -21,12 +21,6 @@ export default function ImageForm({ closeState, imagePreview, setFormStatus }: I
       setFormStatus(upload);
     }
   }
-  // const [state, uploadImage] = useActionState(changeProfile, undefined);
-
-  // if (state) {
-  //   setFormStatus(state);
-  //   closeState();
-  // }
 
   return (
     <form className="flex lg:flex-row flex-col w-full border border-black/20 p-4 rounded-lg gap-y-3" onSubmit={uploadImage}>
