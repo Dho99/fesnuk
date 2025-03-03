@@ -3,7 +3,7 @@
 import { prisma } from "../prisma";
 import { getUserIdSession } from "./user";
 
-export async function getUserFriend() {
+export async function getUserFriendId() {
     const user = await getUserIdSession();
 
     if (!user) return null;
@@ -16,6 +16,36 @@ export async function getUserFriend() {
             friends: {
                 select: {
                     userFriendId: true
+                }
+            }
+        }
+    });
+
+    // console.log(userFriends);
+    return userFriends;
+
+}
+
+export async function getUserFriend() {
+    const user = await getUserIdSession();
+
+    if (!user) return null;
+
+    const userFriends = await prisma.friendList.findFirst({
+        where: {
+            userId: user?.id as string
+        },
+        include: {
+            friends: {
+                include: {
+                    friendData: {
+                        select: {
+                            id: true,
+                            email: true,
+                            name: true,
+                            image: true
+                        }
+                    }
                 }
             }
         }

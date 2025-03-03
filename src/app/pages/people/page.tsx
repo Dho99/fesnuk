@@ -1,12 +1,11 @@
 "use client";
 
 import { getPeoples } from "@/lib/handler/user";
-import { getUserFriend, addFriend, removeFriend } from "@/lib/handler/friend";
+import { getUserFriendId, addFriend, removeFriend } from "@/lib/handler/friend";
 import { Box, Text } from "@chakra-ui/react";
-import Image from "next/image";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import type { User } from "@/lib/definition";
+import PreviewPeople from "./preview";
 
 type FriendProps = {
     id: string,
@@ -30,7 +29,7 @@ export default function Page() {
     };
 
     const getFriendsData = async () => {
-        const friendsData = await getUserFriend();
+        const friendsData = await getUserFriendId();
         setFriends(friendsData);
     }
 
@@ -112,52 +111,10 @@ export default function Page() {
                 {peoples && peoples!.length > 0 ? (
                     <>
                         {peoples!.map((people, index) => (
-                            <Box
-                                key={index}
-                                w={{ md: "3/4", base: "full" }}
-                                bgColor={"white"}
-                                mx={"auto"}
-                                shadow={"sm"}
-                                rounded={"lg"}
-                                color={"black"}
-                                display={"flex"}
-                                flexDir={"row"}
-                                py={3}
-                                px={5}
-                                gap={7}
-                            >
-                                {/* {JSON.stringify(people.id)} */}
-                                <Box rounded={"full"} overflow={"hidden"}>
-                                    {people.image ? (
-                                        people.image?.startsWith("http") ? (
-                                            <Image
-                                                src={people.image}
-                                                alt="Profile Image"
-                                                width={100}
-                                                height={100}
-                                            />
-                                        ) : (
-                                            <Image
-                                                src={`/uploads/profile/${people.image}`}
-                                                alt="Profile Image"
-                                                width={100}
-                                                height={100}
-                                            />
-                                        )
-                                    ) : (
-                                        <UserCircleIcon className="text-slate-500" />
-                                    )}
-                                </Box>
-                                <Box display={"flex"} flexDir={"column"} gapY={1}>
-                                    <Text textStyle={"2xl"} fontWeight={"bold"}>
-                                        {people.name}
-                                    </Text>
-                                    <Text textStyle={"lg"} fontWeight={""}>
-                                        {people.email}
-                                    </Text>
-                                </Box>
-                                <Box w={"full"} display={"flex"} m={"auto"}>
-                                    {
+                            <Box key={index} w={"full"}>
+                                <PreviewPeople
+                                    userData={people}
+                                    previewButtonAction={
                                         friends?.friends.some((friend) => friend.userFriendId === people.id) ? (
                                             <button
                                                 className="bg-red-600 ms-auto p-3 rounded-xl text-white"
@@ -178,9 +135,7 @@ export default function Page() {
                                             </button>
                                         )
                                     }
-                                </Box>
-
-                                {/* {JSON.stringify(people)} */}
+                                />
                             </Box>
                         ))}
                     </>
@@ -209,3 +164,31 @@ export default function Page() {
         </Box>
     );
 }
+
+// export function previewButtonAction({userId}){
+//     return (
+//         <Box w={"full"} display={"flex"} m={"auto"}>
+//               {
+//                   friends?.friends.some((friend) => friend.userFriendId === people.id) ? (
+//                       <button
+//                           className="bg-red-600 ms-auto p-3 rounded-xl text-white"
+//                           onClick={() => {
+//                               removeUserFriend(people.id);
+//                           }}
+//                       >
+//                           Remove Friend
+//                       </button>
+//                   ) : (
+//                       <button
+//                           className="bg-slate-800 ms-auto p-3 rounded-xl text-white"
+//                           onClick={() => {
+//                               addUserFriend(people.id);
+//                           }}
+//                       >
+//                           Add Friend
+//                       </button>
+//                   )
+//               }
+//         </Box>
+//     )
+// }

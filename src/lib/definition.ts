@@ -59,9 +59,14 @@ export type CommentProps = {
 
 export type Friend = {
   id: string;
-  friendListId: string | null
-  userId: string
-  user: User | null
+  friendListId: string
+  userFriendId: string
+  friendData: {
+    name: string | null;
+    id: string;
+    email: string;
+    image: string | null;
+  }
 
 }
 
@@ -69,7 +74,6 @@ export type FriendList = {
   id: string;
   userId: string
   friends: Friend[]
-  user: User | null
 
 }
 
