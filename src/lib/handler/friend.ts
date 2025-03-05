@@ -131,3 +131,57 @@ export async function removeFriend(userId: string) {
         if (err instanceof Error) return { success: false, message: err.message }
     }
 }
+
+export async function serverSearchFriend(formData: FormData) {
+
+    const friendName = formData.get("friendName");
+
+    const getUserSession = await getUserIdSession();
+
+    if (!getUserIdSession) return { success: false, message: "Not authenticated" };
+
+    const getFriendListId = await prisma.friendList.findFirst({
+        where: {
+            userId: getUserSession?.id
+        }
+    });
+
+    try {
+        const friends = await prisma.friend.findMany({
+            where: {
+                friendListId: getFriendListId?.id,
+                friendData: {
+                    name: {
+                        contains: friendName as string,
+                        mode: 'insensitive'
+                    }
+                }
+            },
+            include: {
+                friendData: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        image: true
+                    }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            data: friends,
+            message: "fetching success"
+        };
+
+    } catch (err) {
+        if (err instanceof Error) {
+            return {
+                success: false,
+                data: null,
+                message: err.message
+            }
+        }
+    }
+}
