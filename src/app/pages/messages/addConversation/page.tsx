@@ -54,9 +54,9 @@ export default function AddConversation() {
             </Box>
 
             <Box w={'full'} color={"black"} p={5} display={"flex"} flexDir={"column"}>
-                {friends ? (
+                {Array.isArray(friends) ? (
                     <Box w={"full"} display={"flex"} flexDir={"column"} gap={4}>
-                        {friends!.map((friend, index) => (
+                        {friends.map((friend: Friend, index: number) => (
                             <Box key={index} w={"full"} display={"flex"} flexDir={"column"} gap={4}>
                                 <PreviewPeople userData={friend.friendData} previewButtonAction={<AddConversationButton userId={friend.friendData.id} />} />
                             </Box>
