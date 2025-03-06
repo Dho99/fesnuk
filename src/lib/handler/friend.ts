@@ -169,11 +169,13 @@ export async function serverSearchFriend(formData: FormData) {
             }
         });
 
+
         return {
             success: true,
             data: friends,
             message: "fetching success"
         };
+
 
     } catch (err) {
         if (err instanceof Error) {
