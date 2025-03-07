@@ -2,9 +2,24 @@
 
 import { Text, Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { getAllChats } from "@/lib/handler/chat";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+
+    // const [conversations, setConversation] = useState(null);
+
+    const getChatsData = async () => {
+        const allChats = await getAllChats();
+
+        console.log(allChats)
+    }
+
+    useEffect(() => {
+        getChatsData();
+    }, [])
+
     return (
         <>
             <Box display={"flex"} flexDir={"row"} mb={4}>

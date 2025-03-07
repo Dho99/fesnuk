@@ -9,12 +9,22 @@ export async function getAllChats() {
 
     if (!userSession) return null;
 
-    const chats = await prisma.room.findMany({
+    const chats = await prisma.chats.findMany({
         where: {
             userId: userSession?.id
         },
         include: {
-            messages: true
+            rooms: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            image: true,
+                            name: true
+                        }
+                    }
+                }
+            }
         }
     })
 
