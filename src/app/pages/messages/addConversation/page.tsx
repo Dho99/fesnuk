@@ -7,7 +7,7 @@ import PreviewPeople from "../../people/preview"
 import { FormEvent } from "react"
 import { Alert } from "@chakra-ui/react"
 import { CloseButton } from "@/components/ui/close-button"
-
+import { addConversation } from "@/lib/handler/chat"
 
 
 type SearchFriends = {
@@ -106,12 +106,15 @@ export default function AddConversation() {
 }
 
 export function AddConversationButton({ userId }: { userId: string }): React.ReactNode {
+
+    async function clientAddConversation() {
+        await addConversation(userId);
+    }
+
     return (
         <button
             className="bg-slate-800 ms-auto p-3 rounded-xl text-white h-fit"
-            onClick={() => {
-                alert(userId);
-            }}
+            onClick={clientAddConversation}
         >
             Add Friend
         </button>

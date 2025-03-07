@@ -21,9 +21,9 @@ export const daysFromToday = (date: Date) => {
   const differenceInSec = Math.ceil(differenceInTime / (100 * 60));
 
 
-  if(differenceInSec < 60){
+  if (differenceInSec < 60) {
     return `${differenceInSec} Seconds`
-  }else if (differenceInMinutes < 60) {
+  } else if (differenceInMinutes < 60) {
     return `${differenceInMinutes} Minutes`;
   } else if (differenceInHours < 24) {
     return `${differenceInHours} Hours`;
@@ -32,3 +32,11 @@ export const daysFromToday = (date: Date) => {
     return `${differenceInDays} Days`;
   }
 };
+
+
+export const returnErrMsg = (err: Error) => {
+  return {
+    success: false,
+    message: err.message
+  }
+}
