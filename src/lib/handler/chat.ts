@@ -9,7 +9,7 @@ export async function getAllChats() {
 
     if (!userSession) return null;
 
-    const chats = await prisma.chats.findMany({
+    const chats = await prisma.chat.findMany({
         where: {
             userId: userSession?.id
         },
@@ -22,9 +22,16 @@ export async function getAllChats() {
                             image: true,
                             name: true
                         }
+                    },
+                    messages: {
+                        orderBy: {
+                            created_at: 'desc'
+                        },
+                        take: 1
                     }
                 }
-            }
+            },
+            user: true
         }
     })
 
@@ -37,41 +44,41 @@ export async function addConversation(friendId: string) {
     const userSession = await getUserDataSession();
 
     try {
-        let findRoom = await prisma.chats.findMany({
+
+        const findRoom = await prisma.room.findFirst({
             where: {
-                userId: userSession?.id as string
+                userId: friendId as string
             },
             include: {
-                rooms: true
-            },
-
+                chat: true
+            }
         });
 
 
-        if (!findRoom[0]) {
-            const createRoom = await prisma.chats.create({
+        if (findRoom) {
+            return {
+                success: true,
+                message: findRoom.chat.id
+            }
+        } else {
+
+            const createChatSession = await prisma.chat.create({
                 data: {
-                    userId: userSession?.id as string
-                },
-                include: {
-                    rooms: true
+                    userId: userSession?.id as string,
+                    rooms: {
+                        create: [
+                            { userId: friendId as string },
+                            { userId: userSession?.id as string },
+                        ]
+                    }
                 }
-            })
-
-            findRoom = new Array(createRoom);
-        };
+            });
 
 
-        await prisma.room.create({
-            data: {
-                userId: friendId as string,
-                chatId: findRoom[0]?.id as string
-            },
-        })
-
-        return {
-            success: true,
-            message: null
+            return {
+                success: true,
+                message: createChatSession.id
+            }
         }
 
 

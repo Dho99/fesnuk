@@ -1,6 +1,5 @@
 'use client'
 import { Box } from "@chakra-ui/react"
-import { useState } from "react"
 import { serverSearchFriend } from "@/lib/handler/friend"
 import type { Friend } from "@/lib/definition"
 import PreviewPeople from "../../people/preview"
@@ -8,7 +7,8 @@ import { FormEvent } from "react"
 import { Alert } from "@chakra-ui/react"
 import { CloseButton } from "@/components/ui/close-button"
 import { addConversation } from "@/lib/handler/chat"
-
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 type SearchFriends = {
     data: Friend[],
@@ -20,6 +20,7 @@ export default function AddConversation() {
 
 
     const [friends, setFriends] = useState<SearchFriends | null | unknown>(null);
+
     const [inputMsg, setInputMsg] = useState<{ open: boolean, message: string | null }>({
         open: false,
         message: null
@@ -107,8 +108,13 @@ export default function AddConversation() {
 
 export function AddConversationButton({ userId }: { userId: string }): React.ReactNode {
 
+    const router = useRouter();
+
     async function clientAddConversation() {
-        await addConversation(userId);
+        const addConv = await addConversation(userId);
+        if (addConv?.success) {
+            router.push(`/pages/messages/conversation/${addConv.message}`)
+        }
     }
 
     return (

@@ -1,6 +1,6 @@
 export type User = {
   email: string;
-  name: string | null;
+  name: string;
   id: string;
   password: string | null;
   emailVerified: Date | null;
@@ -13,7 +13,7 @@ export type Post = {
   id: string;
   user: {
     image: string | null;
-    name: string | null;
+    name: string;
   };
   description: string | null;
   images: {
@@ -40,7 +40,7 @@ export type Like = {
   userId: string;
   user: {
     image: string | null;
-    name: string | null;
+    name: string;
   };
 };
 
@@ -51,7 +51,7 @@ export type CommentProps = {
   authorId: string | null;
   createdAt: Date | null;
   author: {
-    name: string | null;
+    name: string;
     image: string | null;
   }
 };
@@ -62,7 +62,7 @@ export type Friend = {
   friendListId: string
   userFriendId: string
   friendData: {
-    name: string | null;
+    name: string;
     id: string;
     email: string;
     image: string | null;
@@ -77,21 +77,25 @@ export type FriendList = {
 
 }
 
-export type Message = {
-  id: string | null;
-  message: string | null;
-  senderId: string | null;
-  sent_at: Date;
-  roomId: string | null;
-  room: {
-    id: string | null;
-    userId: string | null;
-  },
-  sender: User | null
-
-}
-
-export type Room = {
+export type Conversation = {
   id: string,
-  userId: string
+  userId: string,
+  user: User,
+  rooms: {
+    id: string,
+    userId: string,
+    chatId: string,
+    user: {
+      id: string,
+      image: string | null,
+      name: string
+    },
+    messages: {
+      id: string;
+      message: string;
+      senderId: string;
+      created_at: Date;
+      roomId: string;
+    }[];
+  }[]
 }

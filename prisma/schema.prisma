@@ -10,7 +10,7 @@ generator client {
 
 model User {
   id            String       @id @default(cuid())
-  name          String?
+  name          String
   email         String       @unique
   emailVerified DateTime?
   image         String?
@@ -29,7 +29,7 @@ model User {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   Authenticator Authenticator[]
-  Chats         Chats[]
+  chats         Chat[]
 }
 
 model Account {
@@ -138,41 +138,6 @@ model Comment {
   post   Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model Chats {
-  id     String @default(cuid())
-  userId String
-  rooms  Room[]
-
-  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@id([id])
-}
-
-model Room {
-  id       String    @default(cuid())
-  userId   String
-  chatId   String
-  messages Message[]
-
-  user User  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  chat Chats @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@id([id])
-}
-
-model Message {
-  id       String   @default(cuid())
-  message  String
-  senderId String
-  sent_at  DateTime
-  roomId   String
-
-  sender User @relation(fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  room   Room @relation(fields: [roomId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-  @@id([id])
-}
-
 model Friend {
   id           String @unique @default(cuid())
   friendListId String
@@ -188,4 +153,45 @@ model FriendList {
   friends Friend[]
 
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Chat {
+  id         String    @default(cuid())
+  rooms      Room[]
+  messages   Message[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+
+  @@id([id])
+}
+
+model Room {
+  id       String    @default(cuid())
+  userId   String
+  chatId   String
+  messages Message[]
+
+  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  chat Chat @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@id([id])
+}
+
+model Message {
+  id       String @default(cuid())
+  message  String
+  senderId String
+  chatId   String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  sender User   @relation(fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  chat   Chat   @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Room   Room   @relation(fields: [roomId], references: [id])
+  roomId String
+
+  @@id([id])
 }
