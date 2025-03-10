@@ -94,3 +94,23 @@ export async function addConversation(friendId: string) {
 }
 
 
+
+export async function getConversationInfo(chatId: string) {
+    const chats = await prisma.chat.findFirst({
+        where: {
+            id: chatId as string
+        },
+        include: {
+            user: true,
+            rooms: {
+                include: {
+                    user: true
+                },
+            },
+            messages: true
+        },
+    });
+
+    return chats;
+}
+

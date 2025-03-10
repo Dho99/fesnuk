@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         const allChats = await getAllChats();
         setConversation(allChats);
 
-        console.log(allChats);
+        // console.log(allChats);
     }
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 maxH={"80vh"}
                 overflow={"hidden"}
             >
-                <Box maxW={"24%"} borderRight={"md"} maxH={"80vh"}>
+                <Box maxW={"24%"} borderRight={"xs"} borderColor={"black/70"} maxH={"80vh"} shadow={"sm"}>
                     <Box justifyContent={"center"} h={"70px"} display={"flex"} alignContent={"center"} alignItems={"center"}>
                         <input type="text" className="border border-slate-400 outline-sky-500 bg-transparent p-2 m-2 rounded-md w-full" placeholder="Find Conversation" />
                     </Box>
