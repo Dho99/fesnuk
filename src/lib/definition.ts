@@ -74,28 +74,25 @@ export type FriendList = {
   id: string;
   userId: string
   friends: Friend[]
-
 }
+
+
 
 export type Conversation = {
-  id: string,
-  userId: string,
-  user: User,
+  id: string;
+  userId: string;
+  user: User;
   rooms: {
-    id: string,
-    userId: string,
-    chatId: string,
-    user: {
-      id: string,
-      image: string | null,
-      name: string
-    },
-    messages: {
-      id: string;
-      message: string;
-      senderId: string;
-      created_at: Date;
-      roomId: string;
-    }[];
-  }[]
-}
+    id: string;
+    userId: string;
+    chatId: string;
+    user: User;
+  }[];
+  messages: {
+    id: string;
+    message: string;
+    senderId: string;
+    created_at: Date;
+    roomId: string;
+  }[];
+};

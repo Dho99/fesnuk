@@ -14,8 +14,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const getChatsData = async () => {
         const allChats = await getAllChats();
         setConversation(allChats);
-
-        // console.log(allChats);
     }
 
     useEffect(() => {
@@ -43,7 +41,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 maxH={"80vh"}
                 overflow={"hidden"}
             >
-                <Box maxW={"24%"} borderRight={"xs"} borderColor={"black/70"} maxH={"80vh"} shadow={"sm"}>
+                <Box maxW={"20%"} borderRight={"xs"} borderColor={"black/70"} maxH={"80vh"} shadow={"sm"}>
                     <Box justifyContent={"center"} h={"70px"} display={"flex"} alignContent={"center"} alignItems={"center"}>
                         <input type="text" className="border border-slate-400 outline-sky-500 bg-transparent p-2 m-2 rounded-md w-full" placeholder="Find Conversation" />
                     </Box>
@@ -69,7 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                                     <Text key={room.id} truncate textStyle={"md"} fontWeight={"bold"} mb={2}>
                                                         {room.user.name}
                                                     </Text>
-                                                    <Text truncate>{room.messages[0] ? room.messages[0].message : `Start chat with ${room.user.name}`}</Text>
+                                                    <Text truncate>{conv.messages[0] ? conv.messages[0].message : `Start chat with ${room.user.name}`}</Text>
                                                 </div>
                                             ))}
                                     </div>

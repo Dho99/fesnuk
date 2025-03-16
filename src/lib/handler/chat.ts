@@ -16,20 +16,14 @@ export async function getAllChats() {
         include: {
             rooms: {
                 include: {
-                    user: {
-                        select: {
-                            id: true,
-                            image: true,
-                            name: true
-                        }
-                    },
-                    messages: {
-                        orderBy: {
-                            created_at: 'desc'
-                        },
-                        take: 1
-                    }
-                }
+                    user: true,
+                },
+            },
+            messages: {
+                orderBy: {
+                    created_at: 'desc'
+                },
+                take: 1
             },
             user: true
         }
@@ -111,6 +105,14 @@ export async function getConversationInfo(chatId: string) {
         },
     });
 
-    return chats;
+    const authUser = await getUserDataSession();
+
+
+    return {
+        authUser: { email: authUser?.email, name: authUser?.name, image: authUser?.image },
+        chatData: chats
+    }
+    // return chats;
+
 }
 
