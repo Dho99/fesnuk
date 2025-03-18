@@ -168,10 +168,10 @@ model Chat {
 }
 
 model Room {
-  id       String    @default(cuid())
-  userId   String
-  chatId   String
-  messages Message[]
+  id     String @default(cuid())
+  userId String
+  chatId String
+  // messages Message[]
 
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   chat Chat @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -188,10 +188,9 @@ model Message {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  sender User   @relation(fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  chat   Chat   @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Room   Room   @relation(fields: [roomId], references: [id])
-  roomId String
+  sender User @relation(fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  chat   Chat @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  // Room   Room @relation(fields: [roomId], references: [id])
 
   @@id([id])
 }

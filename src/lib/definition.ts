@@ -93,6 +93,5 @@ export type Conversation = {
     message: string;
     senderId: string;
     created_at: Date;
-    roomId: string;
   }[];
 };

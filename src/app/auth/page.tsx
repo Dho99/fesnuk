@@ -42,18 +42,17 @@ export default function Page() {
         >
           {/* {JSON.stringify(providerMap)} */}
 
+
           {Object.values(providerMap).map((provider, index) => (
             <form
               key={index}
               action={async () => {
                 "use server";
-                try {
-                  await signIn(provider.id);
-                } catch (error) {
-                  throw error;
-                }
-              }}
-            >
+
+                await signIn(provider.id);
+
+              }}>
+
               <Button
                 border={"1px solid"}
                 type="submit"
@@ -72,6 +71,7 @@ export default function Page() {
               </Button>
             </form>
           ))}
+
         </Flex>
       </Flex>
     </Box>

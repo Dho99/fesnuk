@@ -2,13 +2,14 @@
 
 import { Box, Text } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react"
-import { getConversationInfo } from "@/lib/handler/chat";
+import { useState, useEffect, FormEvent } from "react"
+import { pusherClient } from "@/lib/handler/pusherClient";
+import { getConversationInfo, serverSendMessage } from "@/lib/handler/chat";
+import type { Conversation, User } from "@/lib/definition";
 import Image from "next/image";
-import type { Conversation } from "@/lib/definition";
 
 type ConversationPage = {
-  authUser: null | { email: string | unknown, name: string | unknown, image: string | unknown };
+  authUser: null | User;
   chatData: null | Conversation;
 }
 
@@ -16,6 +17,7 @@ export default function Messages() {
   const params = useParams<{ conversationId: string }>();
 
   const [chats, setChatsData] = useState<null | ConversationPage>(null);
+  const [isSendError, sendError] = useState<null | { error: boolean, message: string }>(null);
 
   const getConvData = async () => {
     const chats = await getConversationInfo(params.conversationId);
@@ -26,11 +28,59 @@ export default function Messages() {
 
   useEffect(() => {
     getConvData();
+    const channel = pusherClient.subscribe(params.conversationId);
+
+    channel.bind('new-message', (data: { message: string; id: string; senderId: string; created_at: Date; roomId: string }) => {
+      setChatsData((prev) => {
+        if (!prev || !prev.chatData) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          chatData: {
+            ...prev.chatData,
+            messages: [...(prev.chatData.messages || []), data],
+            id: prev.chatData.id
+          },
+          authUser: prev.authUser
+        };
+      });
+    });
+
+    return () => {
+      pusherClient.unsubscribe(params.conversationId);
+    }
+
   }, []) //eslint-disable-line
+
+  async function sendMessage(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const payload = new FormData(e.currentTarget);
+
+    if (payload.get('messageBody') == '') {
+      sendError({ error: true, message: "Please input your message" });
+      return;
+    }
+
+
+    const sendChatBtn = document.getElementById("sendChatBtn") as HTMLButtonElement | null;
+    if (sendChatBtn) {
+      sendChatBtn.disabled = true;
+
+      const send = await serverSendMessage(payload, params.conversationId as string);
+
+      if (send) {
+        sendChatBtn.disabled = false;
+        (document.getElementById('msgInput') as HTMLTextAreaElement).value = '';
+        sendError(null);
+      }
+    }
+  }
 
   return (
     <Box w={"full"} h={"full"} position={"relative"}>
-      <Box position={"relative"} top={0} py={3} px={5} w={"full"} display={"flex"} flexDir={"row"} gapX={"2"} border={"xs"} borderColor={"black/30"} rounded={"md"}>
+      <Box position={"relative"} top={0} left={0} py={3} px={5} w={"full"} display={"flex"} flexDir={"row"} gapX={"2"} border={"xs"} borderColor={"black/30"} rounded={"md"}>
         {
           chats?.chatData?.rooms?.filter((room) => chats?.authUser && room.user.name !== chats.authUser.name).map((room) => (
             <Box key={room.id} display={"flex"} flexDir={"row"} alignItems={"center"} gap={3}>
@@ -47,11 +97,33 @@ export default function Messages() {
         }
       </Box>
 
+      <Box display={"flex"} flexDir={"column"} gap={2} py={2} h={"75%"} px={5} overflow={"auto"} justifyItems={"center"}>
 
-      <Box position={"absolute"} bottom={0} py={3} px={5} w={"full"} display={"flex"} flexDir={"row"} gapX={"2"} border={"xs"} borderColor={"black/30"} rounded={"md"}>
-        <textarea name="" className="rounded-lg w-full bg-transparent border border-slate-300 focus:outline focus:outline-slate-500 my-auto p-2 " id="" rows={1}></textarea>
-        <button className="bg-slate-800 rounded-lg px-3 text-white">Send</button>
+        {
+          chats?.chatData?.messages.map((msg, index) => (
+            <Box key={index}>
+              <Box p={2} bgColor={"black/20"} maxW={"45%"} display={"flex"} ms={msg.senderId == chats.authUser?.id ? "auto" : ""} rounded={"lg"}>
+                <Text textStyle={"lg"}>{msg.message}</Text>
+              </Box>
+            </Box>
+          ))
+        }
       </Box>
+
+
+      <form action="" className="absolute bottom-0 w-full px-5 py-3 flex flex-col rounded-md border border-slate-400 bg-white shadow-xl" onSubmit={sendMessage}>
+        <div className="flex flex-row">
+
+          <textarea name="messageBody" className={`border bg-transparent ${isSendError?.error ? 'border-red-600' : '  border-slate-300 '} rounded-lg w-full bg-transparentfocus:outline focus:outline-slate-500 my-auto p-2`} id="msgInput" rows={1}></textarea>
+          <button className={`${isSendError?.error ? 'bg-red-600' : 'bg-slate-800'} rounded-lg px-3 text-white`} type={"submit"} id="sendChatBtn">Send</button>
+        </div>
+        {
+          isSendError?.error ? (<div className="w-full text-red-600">{isSendError.message}</div>) : (<></>)
+        }
+
+      </form>
+
+
     </Box>
 
   );

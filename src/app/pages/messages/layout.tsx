@@ -58,7 +58,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     onClick={() => { router.push(`/pages/messages/conversation/${conv.id}`) }}
                                     _hover={{ cursor: "pointer" }}
                                 >
-
                                     <div key={index}>
                                         {conv.rooms
                                             .filter((room) => room.user.id !== conv.userId)

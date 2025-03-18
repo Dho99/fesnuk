@@ -2,6 +2,7 @@
 
 import { prisma } from "../prisma";
 import { getUserDataSession } from "./user";
+import { pusherServer } from "./pusher";
 
 export async function getAllChats() {
 
@@ -19,12 +20,7 @@ export async function getAllChats() {
                     user: true,
                 },
             },
-            messages: {
-                orderBy: {
-                    created_at: 'desc'
-                },
-                take: 1
-            },
+            messages: true,
             user: true
         }
     })
@@ -98,7 +94,7 @@ export async function getConversationInfo(chatId: string) {
             user: true,
             rooms: {
                 include: {
-                    user: true
+                    user: true,
                 },
             },
             messages: true
@@ -109,10 +105,36 @@ export async function getConversationInfo(chatId: string) {
 
 
     return {
-        authUser: { email: authUser?.email, name: authUser?.name, image: authUser?.image },
+        authUser: authUser,
         chatData: chats
     }
-    // return chats;
+
 
 }
 
+export async function serverSendMessage(formData: FormData, convId: string) {
+    const senderId = await getUserDataSession();
+
+    const message = formData.get('messageBody') as string;
+
+    try {
+
+        const saveMesage = await prisma.message.create({
+            data: {
+                message: message as string,
+                senderId: senderId?.id as string,
+                chatId: convId as string,
+            }
+        })
+        // console.log(data)
+
+        await pusherServer.trigger(convId, 'new-message', saveMesage);
+
+
+        return true;
+    } catch (e) {
+        if (e instanceof Error) {
+            console.log(e.message);
+        }
+    }
+}
