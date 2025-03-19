@@ -24,12 +24,13 @@ model User {
   messages      Message[]
   friends       Friend[]
   friendLists   FriendList[]
-  rooms         Room[]
+  // rooms         Room[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   Authenticator Authenticator[]
-  chats         Chat[]
+  chatsAsUser1  Chat[]          @relation("User1Relation")
+  chatsAsUser2  Chat[]          @relation("User2Relation")
 }
 
 model Account {
@@ -156,28 +157,31 @@ model FriendList {
 }
 
 model Chat {
-  id         String    @default(cuid())
-  rooms      Room[]
+  id      String @default(cuid())
+  // rooms      Room[]
+  userId1 String
+  user1   User   @relation("User1Relation", fields: [userId1], references: [id])
+
+  userId2 String
+  user2   User   @relation("User2Relation", fields: [userId2], references: [id])
+
   messages   Message[]
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
-  user       User      @relation(fields: [userId], references: [id])
-  userId     String
 
   @@id([id])
 }
 
-model Room {
-  id     String @default(cuid())
-  userId String
-  chatId String
-  // messages Message[]
+// model Room {
+//   id     String @default(cuid())
+//   userId String
+//   chatId String
 
-  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  chat Chat @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+//   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+//   chat Chat @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
-  @@id([id])
-}
+//   @@id([id])
+// }
 
 model Message {
   id       String @default(cuid())

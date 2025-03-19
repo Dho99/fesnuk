@@ -12,22 +12,31 @@ export async function getAllChats() {
 
     const chats = await prisma.chat.findMany({
         where: {
-            userId: userSession?.id
+            OR: [
+                {
+                    userId1: userSession?.id
+                },
+                {
+                    userId2: userSession?.id
+                }
+
+            ]
         },
         include: {
-            rooms: {
-                include: {
-                    user: true,
-                },
-            },
             messages: true,
-            user: true
+            user1: true,
+            user2: true
         }
     })
 
     if (!chats) return null;
 
-    return chats
+    console.log(chats);
+
+    return {
+        authUser: userSession,
+        chats: chats
+    }
 }
 
 export async function addConversation(friendId: string) {
@@ -35,41 +44,19 @@ export async function addConversation(friendId: string) {
 
     try {
 
-        const findRoom = await prisma.room.findFirst({
-            where: {
-                userId: friendId as string
-            },
-            include: {
-                chat: true
+
+        const createChatSession = await prisma.chat.create({
+            data: {
+                userId1: userSession?.id as string,
+                userId2: friendId as string,
             }
         });
 
-
-        if (findRoom) {
-            return {
-                success: true,
-                message: findRoom.chat.id
-            }
-        } else {
-
-            const createChatSession = await prisma.chat.create({
-                data: {
-                    userId: userSession?.id as string,
-                    rooms: {
-                        create: [
-                            { userId: friendId as string },
-                            { userId: userSession?.id as string },
-                        ]
-                    }
-                }
-            });
-
-
-            return {
-                success: true,
-                message: createChatSession.id
-            }
+        return {
+            success: true,
+            message: createChatSession.id
         }
+
 
 
 
@@ -91,12 +78,8 @@ export async function getConversationInfo(chatId: string) {
             id: chatId as string
         },
         include: {
-            user: true,
-            rooms: {
-                include: {
-                    user: true,
-                },
-            },
+            user1: true,
+            user2: true,
             messages: true
         },
     });

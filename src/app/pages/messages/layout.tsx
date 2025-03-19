@@ -4,12 +4,17 @@ import { Text, Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getAllChats } from "@/lib/handler/chat";
-import type { Conversation } from "@/lib/definition";
+import type { Conversation, User } from "@/lib/definition";
+
+type ConvState = {
+    authUser: User,
+    chats: Conversation[]
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
-    const [conversations, setConversation] = useState<Conversation[] | null>(null);
+    const [conversations, setConversation] = useState<ConvState | null>(null);
 
     const getChatsData = async () => {
         const allChats = await getAllChats();
@@ -47,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </Box>
                     <Box overflowY={"auto"} maxH={"80vh"} display={"flex"} flexDir={"column"} px={3} gapY={1}>
                         {
-                            conversations?.map((conv, index) => (
+                            conversations?.chats?.map((conv, index) => (
                                 <Box
                                     key={index}
                                     py={"3"}
@@ -58,18 +63,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     onClick={() => { router.push(`/pages/messages/conversation/${conv.id}`) }}
                                     _hover={{ cursor: "pointer" }}
                                 >
-                                    <div key={index}>
-                                        {conv.rooms
-                                            .filter((room) => room.user.id !== conv.userId)
-                                            .map((room) => (
-                                                <div key={index}>
-                                                    <Text key={room.id} truncate textStyle={"md"} fontWeight={"bold"} mb={2}>
-                                                        {room.user.name}
-                                                    </Text>
-                                                    <Text truncate>{conv.messages[0] ? conv.messages[0].message : `Start chat with ${room.user.name}`}</Text>
-                                                </div>
-                                            ))}
+
+                                    <div>
+                                        <Text key={conv.id} truncate textStyle={"md"} fontWeight={"bold"} mb={2}>
+                                            {conv.userId1 == conversations?.authUser?.id ? conv.user2.name : conv.user1.name}
+                                        </Text>
+                                        <Text truncate>{conv.messages[0] ? conv.messages[0].message : `Start chat with ${conv.userId1 == conversations?.authUser?.id ? conv.user2.name : conv.user1.name}`}</Text>
                                     </div>
+
+
 
                                 </Box>
                             ))
