@@ -22,7 +22,18 @@ export default function Messages() {
   const getConvData = async () => {
     const chats = await getConversationInfo(params.conversationId);
 
-    setChatsData(chats);
+    setChatsData({
+      ...chats,
+      chatData: chats?.chatData
+        ? {
+          ...chats.chatData,
+          messages: chats.chatData.messages?.map((msg) => ({
+            ...msg,
+            roomId: msg.chatId, // Map chatId to roomId
+          })),
+        }
+        : null,
+    });
     // console.log(chats);
   }
 
@@ -81,41 +92,30 @@ export default function Messages() {
   return (
     <Box w={"full"} h={"full"} position={"relative"}>
       <Box position={"relative"} top={0} left={0} py={3} px={5} w={"full"} display={"flex"} flexDir={"row"} gapX={"2"} border={"xs"} borderColor={"black/30"} rounded={"md"}>
-        {
-          chats?.chatData?.userId1 == chats?.authUser?.id ? (
-            <>
-              <Box display={"flex"} flexDir={"row"} alignItems={"center"} gap={3}>
-                {chats?.chatData?.user2.image ? (
-                  <Box rounded={"full"} maxH={"40px"} maxW={"40px"} overflow={"hidden"}>
-                    <Image src={chats?.chatData?.user2.image} alt={`${chats?.chatData?.user2.name} Profile image`} height={40} width={40} />
-                  </Box>
-                ) : (<></>)}
-                <Text textStyle={"xl"} fontWeight={"bold"}>
-                  {chats?.chatData?.user2.name}
-                </Text>
-              </Box>
-            </>
-          ) : (
-            <>
-              <Box display={"flex"} flexDir={"row"} alignItems={"center"} gap={3}>
-                {chats?.chatData?.user1.image ? (
-                  <Box rounded={"full"} maxH={"40px"} maxW={"40px"} overflow={"hidden"}>
-                    <Image src={chats?.chatData?.user1.image} alt={`${chats?.chatData?.user1.name} Profile image`} height={40} width={40} />
-                  </Box>
-                ) : (<></>)}
-                <Text textStyle={"xl"} fontWeight={"bold"}>
-                  {chats?.chatData?.user1.name}
-                </Text>
-              </Box>
-            </>
-          )
-        }
+
+
+
+        {chats?.chatData?.rooms?.filter((room) => room.userId !== chats?.authUser?.id).map((room, index) => (
+
+          <Box display={"flex"} flexDir={"row"} alignItems={"center"} gap={3} key={index}>
+            <Box rounded={"full"} maxH={"40px"} maxW={"40px"} overflow={"hidden"}>
+              {room?.user?.image ? (<Image src={room?.user?.image} alt={`${room?.user?.name} Profile image`} height={40} width={40} />) : (<></>)}
+            </Box>
+            <Text textStyle={"xl"} fontWeight={"bold"}>
+              {room?.user?.name}
+            </Text>
+
+          </Box>
+        ))}
+
+
+
       </Box>
 
       <Box display={"flex"} flexDir={"column"} gap={2} py={2} h={"75%"} px={5} overflow={"auto"} justifyItems={"center"}>
 
         {
-          chats?.chatData?.messages.map((msg, index) => (
+          chats?.chatData?.messages!.map((msg, index) => (
             <Box key={index}>
               <Box py={2} px={5} bgColor={msg.senderId == chats.authUser?.id ? "blue/30" : "black/20"} maxW={"45%"} w={"fit"} display={"flex"} ms={msg.senderId == chats.authUser?.id ? "auto" : ""} rounded={"lg"}>
                 <Text textStyle={"lg"}>{msg.message}</Text>

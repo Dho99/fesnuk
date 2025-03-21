@@ -12,26 +12,24 @@ export async function getAllChats() {
 
     const chats = await prisma.chat.findMany({
         where: {
-            OR: [
-                {
-                    userId1: userSession?.id
-                },
-                {
-                    userId2: userSession?.id
+            rooms: {
+                some: {
+                    userId: userSession?.id
                 }
-
-            ]
+            }
         },
         include: {
+            user: true,
             messages: true,
-            user1: true,
-            user2: true
-        }
+            rooms: {
+                include: {
+                    user: true
+                }
+            }
+        },
     })
 
     if (!chats) return null;
-
-    console.log(chats);
 
     return {
         authUser: userSession,
@@ -44,18 +42,67 @@ export async function addConversation(friendId: string) {
 
     try {
 
-
-        const createChatSession = await prisma.chat.create({
-            data: {
-                userId1: userSession?.id as string,
-                userId2: friendId as string,
+        const findExistingChatId = await prisma.chat.findFirst({
+            where: {
+                userId: userSession?.id as string,
+                rooms: {
+                    some: {
+                        userId: friendId as string
+                    }
+                }
             }
-        });
+        })
+
+        if (!findExistingChatId) {
+            const createChatSession = await prisma.chat.create({
+                data: {
+                    userId: userSession?.id as string,
+                    rooms: {
+                        createMany: {
+                            data: [
+                                { userId: userSession!.id },
+                                { userId: friendId as string },
+                            ]
+                        }
+                    }
+                }
+            });
+
+            if (createChatSession) {
+                const getCreatedChatSession = await prisma.chat.findFirst({
+                    where: {
+                        id: createChatSession?.id as string
+                    },
+                    include: {
+                        user: true,
+                        messages: true,
+                        rooms: {
+                            include: {
+                                user: true
+                            }
+                        }
+                    },
+                })
+                await pusherServer.trigger('new-conversation', `newconv${friendId}`, getCreatedChatSession);
+                await pusherServer.trigger('new-conversation', `newconv${userSession?.id}`, getCreatedChatSession);
+            }
+
+
+            return {
+                success: true,
+                message: createChatSession.id
+            }
+        }
+
+
 
         return {
             success: true,
-            message: createChatSession.id
+            message: findExistingChatId.id
         }
+
+        // console.log(findExistingChatId);
+
 
 
 
@@ -78,19 +125,23 @@ export async function getConversationInfo(chatId: string) {
             id: chatId as string
         },
         include: {
-            user1: true,
-            user2: true,
-            messages: true
+            user: true,
+            messages: true,
+            rooms: {
+                include: {
+                    user: true
+                }
+            }
         },
     });
 
     const authUser = await getUserDataSession();
 
-
     return {
         authUser: authUser,
         chatData: chats
     }
+
 
 
 }

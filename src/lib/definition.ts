@@ -77,17 +77,22 @@ export type FriendList = {
 }
 
 
-
 export type Conversation = {
   id: string;
-  userId1: string;
-  userId2: string;
-  user1: User;
-  user2: User;
+  userId: string;
+  user: User;
+  rooms: {
+    id: string;
+    userId: string;
+    chatId: string;
+    user: User
+  }[];
   messages: {
     id: string;
     message: string;
     senderId: string;
     created_at: Date;
   }[];
+
+
 };

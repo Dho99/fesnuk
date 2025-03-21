@@ -2,9 +2,10 @@
 
 import { Text, Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAllChats } from "@/lib/handler/chat";
 import type { Conversation, User } from "@/lib/definition";
+import { pusherClient } from "@/lib/handler/pusherClient";
 
 type ConvState = {
     authUser: User,
@@ -16,14 +17,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     const [conversations, setConversation] = useState<ConvState | null>(null);
 
-    const getChatsData = async () => {
+    const getChatsData = useCallback(async () => {
         const allChats = await getAllChats();
+
         setConversation(allChats);
-    }
+    }, [])
+
+
 
     useEffect(() => {
         getChatsData();
-    }, [])
+
+        const channel = pusherClient.subscribe(`new-conversation`);
+
+        channel.bind(`newconv${conversations?.authUser?.id}`, (data: Conversation) => {
+            setConversation(prev => prev ? {
+                ...prev,
+                chats: [...prev.chats, data]
+            } : null);
+            console.log(data);
+        });
+
+        return () => {
+            channel.unsubscribe();
+        }
+
+    }, [getChatsData, conversations?.authUser?.id])
 
     return (
         <>
@@ -64,21 +83,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     _hover={{ cursor: "pointer" }}
                                 >
 
-                                    <div>
-                                        <Text key={conv.id} truncate textStyle={"md"} fontWeight={"bold"} mb={2}>
-                                            {conv.userId1 == conversations?.authUser?.id ? conv.user2.name : conv.user1.name}
-                                        </Text>
-                                        <Text truncate>{conv.messages[0] ? conv.messages[0].message : `Start chat with ${conv.userId1 == conversations?.authUser?.id ? conv.user2.name : conv.user1.name}`}</Text>
-                                    </div>
-
-
+                                    {conv.rooms.filter((room) => room.userId !== conversations.authUser.id).map((room, index) => (
+                                        <div key={index}>
+                                            <Text key={conv.id} truncate textStyle={"md"} fontWeight={"bold"} mb={2}>
+                                                {room.user.name}
+                                            </Text>
+                                            <Text truncate>{conv?.messages[0] ? conv.messages[0].message : `Start chat with ${room.user.name}`}</Text>
+                                        </div>
+                                    ))}
 
                                 </Box>
                             ))
                         }
-
-
-
 
                     </Box>
                 </Box>
