@@ -25,6 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 
 
+
     useEffect(() => {
         getChatsData();
 
@@ -35,14 +36,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ...prev,
                 chats: [...prev.chats, data]
             } : null);
-            console.log(data);
         });
+
 
         return () => {
             channel.unsubscribe();
         }
 
     }, [getChatsData, conversations?.authUser?.id])
+
 
     return (
         <>
@@ -69,18 +71,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <Box justifyContent={"center"} h={"70px"} display={"flex"} alignContent={"center"} alignItems={"center"}>
                         <input type="text" className="border border-slate-400 outline-sky-500 bg-transparent p-2 m-2 rounded-md w-full" placeholder="Find Conversation" />
                     </Box>
-                    <Box overflowY={"auto"} maxH={"80vh"} display={"flex"} flexDir={"column"} px={3} gapY={1}>
+                    <Box overflowY={"auto"} maxH={"80vh"} display={"flex"} flexDir={"column"} gapY={1}>
                         {
                             conversations?.chats?.map((conv, index) => (
                                 <Box
                                     key={index}
-                                    py={"3"}
+                                    p={"3"}
                                     borderY={"sm"}
                                     maxH={"100px"}
                                     overflow={"hidden"}
                                     borderColor={"black/50"}
                                     onClick={() => { router.push(`/pages/messages/conversation/${conv.id}`) }}
-                                    _hover={{ cursor: "pointer" }}
+                                    _hover={{ cursor: "pointer", bgColor: "black/20" }}
+                                    transition={"all 0.3s"}
                                 >
 
                                     {conv.rooms.filter((room) => room.userId !== conversations.authUser.id).map((room, index) => (
@@ -98,6 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                     </Box>
                 </Box>
+
 
 
                 <Box w={"full"}>{children}</Box>

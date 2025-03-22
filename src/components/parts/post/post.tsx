@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Input, Button, Center } from "@chakra-ui/react";
+import { Box, Flex, Text, Input, Button } from "@chakra-ui/react";
 import {
   EllipsisHorizontalIcon,
   HandThumbUpIcon,
@@ -14,8 +14,6 @@ import type { Post, User } from "@/lib/definition";
 import React from "react";
 import { daysFromToday } from "@/lib/utils";
 import Image from "next/image";
-import { CommentBox } from "./commentBox";
-import { Suspense } from "react";
 import { PostAction } from "./postAction";
 
 export async function EmojiButton() {
@@ -52,9 +50,9 @@ export default async function Post({
               >
                 {post.user && post.user.image ? (
                   post.user.image.startsWith('http') ? (
-                  <Image src={post.user.image} alt="Profile Image" width={60} height={60} />
+                    <Image src={post.user.image} alt="Profile Image" width={60} height={60} />
                   ) : (
-                  <Image src={`/uploads/profile/${post.user.image}`} alt="Profile Image" width={60} height={60} />
+                    <Image src={`/uploads/profile/${post.user.image}`} alt="Profile Image" width={60} height={60} />
                   )
                 ) : (
                   <UserCircleIcon className="text-slate-500" />
@@ -122,7 +120,7 @@ export default async function Post({
             flexDirection={"row"}
             gapX="4"
           >
-          <PostAction post={JSON.stringify(post)} actionType={"comment"} />
+            <PostAction post={JSON.stringify(post)} actionType={"comment"} />
           </Box>
         </Flex>
       </Box>

@@ -20,7 +20,12 @@ export async function getAllChats() {
         },
         include: {
             user: true,
-            messages: true,
+            messages: {
+                take: 1,
+                orderBy: {
+                    created_at: 'desc'
+                }
+            },
             rooms: {
                 include: {
                     user: true
@@ -35,6 +40,7 @@ export async function getAllChats() {
         authUser: userSession,
         chats: chats
     }
+
 }
 
 export async function addConversation(friendId: string) {
@@ -84,7 +90,7 @@ export async function addConversation(friendId: string) {
                     },
                 })
                 await pusherServer.trigger('new-conversation', `newconv${friendId}`, getCreatedChatSession);
-                await pusherServer.trigger('new-conversation', `newconv${userSession?.id}`, getCreatedChatSession);
+
             }
 
 
@@ -159,10 +165,35 @@ export async function serverSendMessage(formData: FormData, convId: string) {
                 senderId: senderId?.id as string,
                 chatId: convId as string,
             }
-        })
+        });
+
+        const savedMessage = await prisma.chat.findFirst({
+            where: {
+                id: convId as string
+            },
+            include: {
+                user: true,
+                messages: true,
+                rooms: {
+                    include: {
+                        user: true
+                    }
+                }
+            },
+        });
         // console.log(data)
 
         await pusherServer.trigger(convId, 'new-message', saveMesage);
+
+        // push event to user for update its last message state in chat bar at layout
+        const chatReceiverId = savedMessage?.rooms
+            .map(room => room.user)
+            .find(user => user.id !== senderId?.id)?.id;
+
+        if (chatReceiverId) {
+            await pusherServer.trigger(`new-conversation`, `newconv${chatReceiverId}`, savedMessage);
+        }
+        await pusherServer.trigger(`new-conversation`, `newconv${senderId?.id}`, savedMessage);
 
 
         return true;
