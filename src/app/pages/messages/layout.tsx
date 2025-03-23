@@ -32,10 +32,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         const channel = pusherClient.subscribe(`new-conversation`);
 
         channel.bind(`newconv${conversations?.authUser?.id}`, (data: Conversation) => {
-            setConversation(prev => prev ? {
-                ...prev,
-                chats: prev.chats.map(chat => chat.id === data.id ? { ...chat, ...data } : data)
-            } : null);
+            setConversation(prev => {
+                if (!prev) return null;
+
+                const chatExists = prev.chats.some(chat => chat.id === data.id);
+
+                if (chatExists) {
+                    return {
+                        ...prev,
+                        chats: prev.chats.map(chat => chat.id === data.id ? { ...chat, ...data } : chat)
+                    };
+                } else {
+                    return {
+                        ...prev,
+                        chats: [...prev.chats, data]
+                    };
+                }
+            });
         });
 
 
@@ -44,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             channel.unsubscribe();
         }
 
-    }, [getChatsData, conversations?.authUser?.id])
+    }, [getChatsData, conversations?.authUser?.id]) //eslint-disable-line
 
 
     return (
