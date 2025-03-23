@@ -89,6 +89,7 @@ export async function addConversation(friendId: string) {
                         }
                     },
                 })
+                await pusherServer.trigger('new-conversation', `newconv${userSession?.id}`, getCreatedChatSession);
                 await pusherServer.trigger('new-conversation', `newconv${friendId}`, getCreatedChatSession);
 
             }
@@ -173,7 +174,12 @@ export async function serverSendMessage(formData: FormData, convId: string) {
             },
             include: {
                 user: true,
-                messages: true,
+                messages: {
+                    take: 1,
+                    orderBy: {
+                        created_at: 'desc'
+                    }
+                },
                 rooms: {
                     include: {
                         user: true

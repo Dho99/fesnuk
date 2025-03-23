@@ -34,9 +34,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         channel.bind(`newconv${conversations?.authUser?.id}`, (data: Conversation) => {
             setConversation(prev => prev ? {
                 ...prev,
-                chats: [...prev.chats, data]
+                chats: prev.chats.map(chat => chat.id === data.id ? { ...chat, ...data } : data)
             } : null);
         });
+
 
 
         return () => {
