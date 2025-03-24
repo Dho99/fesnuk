@@ -77,14 +77,15 @@ export default async function Post({
         </Flex>
         <Box mt="3" mx="2" borderBottom={"1px solid black"} pb="5">
           <Text textStyle={"md"}>{post.description}</Text>
-          {post.images.length > 1 ? (
-            <Flex direction="row" gapX="2" mt="3">
-              <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
-              <Box h="56" w="1/2" bgColor={"gray.700"} rounded="md"></Box>
-            </Flex>
-          ) : (
-            <></>
-          )}
+          <Flex direction="row" gapX="2" mt="3" overflow={"auto"}>
+            {post?.images ? (
+              post?.images?.map((image: { id: string, postId: string, imagePath: string }, index) => (
+                <Image src={`/uploads${image.imagePath}`} key={index} width={500} height={500} alt={"Post Image"} />
+              ))
+            ) : (
+              <></>
+            )}
+          </Flex>
         </Box>
         <Flex
           dir="row"

@@ -7,6 +7,7 @@ import { pusherClient } from "@/lib/handler/pusherClient";
 import { getConversationInfo, serverSendMessage } from "@/lib/handler/chat";
 import type { Conversation, User } from "@/lib/definition";
 import Image from "next/image";
+import { formatDate } from "@/lib/utils";
 
 type ConversationPage = {
   authUser: null | User;
@@ -118,8 +119,9 @@ export default function Messages() {
         {
           chats?.chatData?.messages!.map((msg, index) => (
             <Box key={index}>
-              <Box py={2} px={5} bgColor={msg.senderId == chats.authUser?.id ? "blue/30" : "black/20"} maxW={"45%"} w={"fit"} display={"flex"} ms={msg.senderId == chats.authUser?.id ? "auto" : ""} rounded={"lg"}>
+              <Box py={2} px={5} bgColor={msg.senderId == chats.authUser?.id ? "blue/30" : "black/20"} maxW={"45%"} w={"fit"} display={"flex"} ms={msg.senderId == chats.authUser?.id ? "auto" : ""} rounded={"lg"} flexDir={"column"}>
                 <Text textStyle={"lg"}>{msg.message}</Text>
+                <Text textStyle={"xs"}>{formatDate(msg.created_at)}</Text>
               </Box>
             </Box>
           ))

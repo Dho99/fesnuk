@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             channel.unsubscribe();
         }
 
-    }, [getChatsData, conversations?.authUser?.id]) //eslint-disable-line
+    }, [getChatsData, conversations?.authUser?.id])
 
 
     return (

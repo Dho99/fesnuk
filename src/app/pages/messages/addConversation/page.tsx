@@ -122,7 +122,7 @@ export function AddConversationButton({ userId }: { userId: string }): React.Rea
             className="bg-slate-800 ms-auto p-3 rounded-xl text-white h-fit"
             onClick={clientAddConversation}
         >
-            Add Friend
+            Start Chat
         </button>
     )
 }

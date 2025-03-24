@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { getUserData } from "./user";
 import { CommentProps } from "../definition";
+import { storeImage } from "../utils";
 
 export async function getAllPosts() {
   const session = await auth();
@@ -35,10 +36,15 @@ export async function getAllPosts() {
   return posts;
 }
 
-export async function createPost(prevState: unknown, formData: FormData) {
+export async function createPost(formData: FormData) {
+
   const session = await auth();
 
-  if (!session) return "Not authenticated";
+  if (!session)
+    return {
+      success: false,
+      message: "Not authenticated",
+    };
 
   const payload = {
     description: formData.get("description") as string,
@@ -52,7 +58,10 @@ export async function createPost(prevState: unknown, formData: FormData) {
     })
     .safeParse(payload);
   if (!validate.success)
-    return "Failed to create Post, please re-check your input";
+    return {
+      success: false,
+      message: "Failed to create Post, please re-check your input",
+    };
 
   try {
     const getUserId = await prisma.user.findFirst({
@@ -61,18 +70,56 @@ export async function createPost(prevState: unknown, formData: FormData) {
       },
     });
 
-    await prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         description: validate.data!.description as string,
         userId: getUserId!.id,
       },
     });
-    revalidatePath("/pages/home");
+
+    const postImgLen = formData.get("postImgLen");
+
+    if (postImgLen && parseInt(postImgLen as string) > 0) {
+      for (let i = 0; i < parseInt(postImgLen as string); i++) {
+        const formDataImg = new FormData();
+        const file = formData.get(`uploadImgs[${i}]`) as File;
+        formDataImg.append("image", file as Blob);
+
+        const test = await storeImage(formDataImg, '/post');
+
+        if (test?.success) {
+          await prisma.postImage.create({
+            data: {
+              postId: post?.id as string,
+              imagePath: '/post/' + test?.message
+            }
+          })
+        } else {
+          return {
+            success: false,
+            message: test?.message
+          }
+        }
+      }
+    }
+
+
+    return {
+      success: true,
+      message: "Post created successfuly",
+    };
   } catch (err) {
     if (err instanceof Error) {
-      return err.message;
+      return {
+        success: false,
+        message: err.message
+      };
+
     }
-    return "An unknown error occurred";
+    return {
+      success: false,
+      message: "An unknown error occurred",
+    };
   }
 }
 
@@ -102,7 +149,7 @@ export async function postComments(prevState: unknown, formData: FormData) {
         authorId: getUserId!.id,
       },
     });
-    return "Post Commented"
+    return "Post Commented";
   } catch (err) {
     if (err instanceof Error) {
       return err.message;
@@ -134,7 +181,10 @@ export async function findPost(id: string) {
   }
 }
 
-export async function getComments(postId: string, limit: number): Promise<CommentProps[] | null> {
+export async function getComments(
+  postId: string,
+  limit: number
+): Promise<CommentProps[] | null> {
   try {
     const comments = await prisma.comment.findMany({
       where: {
@@ -155,7 +205,6 @@ export async function getComments(postId: string, limit: number): Promise<Commen
       },
     });
 
-
     return comments;
   } catch (err) {
     if (err instanceof Error) {
@@ -167,8 +216,6 @@ export async function getComments(postId: string, limit: number): Promise<Commen
 }
 
 export async function likePost(postId: string, userEmail: string) {
-
-
   const getUser = await getUserData(userEmail);
 
   if (!getUser) return null;
@@ -185,15 +232,13 @@ export async function likePost(postId: string, userEmail: string) {
     const cteLike = await prisma.like.create({
       data: {
         postId: getPost.id as string,
-        userId: getUser?.id as string
+        userId: getUser?.id as string,
       },
     });
 
     if (cteLike) {
-      console.log("Posted")
+      console.log("Posted");
     }
-
-
 
     revalidatePath("/pages/home");
   } catch (err) {
@@ -216,13 +261,11 @@ export async function showLikes(postIdArg: string) {
       user: {
         select: {
           name: true,
-          image: true
-        }
-      }
-    }
+          image: true,
+        },
+      },
+    },
   });
-
-
 
   // console.log(likes);
   return likes;
@@ -237,5 +280,3 @@ export const getUserById = async (userId: string) => {
 
   return user;
 };
-
-

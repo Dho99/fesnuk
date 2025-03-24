@@ -1,17 +1,10 @@
 "use server"
 
 import { prisma } from "../prisma";
-import { hashPassword } from "../utils";
+import { hashPassword, storeImage } from "../utils";
 import { userValidateSchema } from "../zodSchema";
 import { signOut } from "@/lib/handler/auth";
-import fs from 'fs';
-import path from "path";
-import { Buffer } from "buffer";
 import { auth } from "@/lib/handler/auth";
-import z from 'zod';
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
 
 export async function getUserProfile(email: string | undefined | null) {
   const userProfile = await prisma.user.findFirst({
@@ -101,53 +94,16 @@ export async function deleteUser(userEmail: string) {
 }
 
 export async function changeProfile(formData: FormData) {
+  const session = await getUserDataSession();
   const imageFile = formData.get("image") as File;
 
-  const imageValidateSchema = z.object({
-    imageFile: z
-      .any()
-      .refine(() => imageFile?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-      .refine(
-        () => ACCEPTED_IMAGE_TYPES.includes(imageFile?.type),
-        "Only .jpg, .jpeg, .png and .webp formats are supported."
-      )
-  })
-
-  const validation = imageValidateSchema.safeParse({ imageFile });
-
-  if (!validation.success) {
-    return {
-      success: false,
-      message: JSON.stringify(validation.error.errors.map((err) => err.message).join(", ")),
-    };
-  }
-
-
-  const buffer = await imageFile.arrayBuffer();
-  const imageBuffer = Buffer.from(buffer);
-
-  const uploadPath: string = path.resolve(process.env.UPLOAD_DIR as string);
-
-  if (!uploadPath) return {
-    success: false,
-    message: "Upload Path doesn't exist"
-  }
-
-  const session = await auth();
-
-  if (!session) return;
-
-  const filePath: string = path.join(uploadPath + '/profile', imageFile.name);
-
   try {
-    fs.writeFileSync(
-      filePath,
-      imageBuffer
-    );
+
+    storeImage(formData, '/profile');
 
     await prisma.user.update({
       where: {
-        email: session?.user?.email as string
+        email: session?.email as string
       },
       data: {
         image: imageFile.name
@@ -156,7 +112,7 @@ export async function changeProfile(formData: FormData) {
 
     return {
       success: true,
-      message: "Image Updated Succesfully"
+      message: "Profile Image updated succesfully"
     }
 
   } catch (err) {
@@ -167,7 +123,6 @@ export async function changeProfile(formData: FormData) {
       }
     }
   }
-
 
 }
 
@@ -225,21 +180,3 @@ export async function getPeoples(skip: number, take: number) {
   return peoples;
 }
 
-
-
-export async function getUserIdSession() {
-  const session = await auth();
-
-  if (!session) return null;
-
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.id as string
-    },
-    select: {
-      id: true
-    }
-  })
-
-  return user;
-}
