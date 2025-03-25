@@ -236,10 +236,6 @@ export async function likePost(postId: string, userEmail: string) {
       },
     });
 
-    if (cteLike) {
-      console.log("Posted");
-    }
-
     revalidatePath("/pages/home");
   } catch (err) {
     if (err instanceof Error) {
@@ -270,13 +266,3 @@ export async function showLikes(postIdArg: string) {
   // console.log(likes);
   return likes;
 }
-
-export const getUserById = async (userId: string) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      id: userId,
-    },
-  });
-
-  return user;
-};
