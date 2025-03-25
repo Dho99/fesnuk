@@ -1,4 +1,3 @@
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { hash, genSalt } from "bcrypt-ts"
@@ -41,14 +40,6 @@ export const daysFromToday = (date: Date) => {
 export const formatDate = (date: Date) => {
   const format = new Date(date).toLocaleTimeString();
   return format;
-}
-
-
-export const returnErrMsg = (err: Error) => {
-  return {
-    success: false,
-    message: err.message
-  }
 }
 
 export async function storeImage(formData: FormData, storeDir: string | null) {

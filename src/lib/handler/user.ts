@@ -99,7 +99,7 @@ export async function changeProfile(formData: FormData) {
 
   try {
 
-    storeImage(formData, '/profile');
+    await storeImage(formData, '/profile');
 
     await prisma.user.update({
       where: {
