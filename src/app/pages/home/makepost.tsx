@@ -245,6 +245,7 @@ export function PopupFormImg({
         {previewImgs ? (
           <button
             type={"button"}
+            onClick={showFormImage}
             className="bg-slate-800 shadow-md text-white p-2 rounded-lg w-fit ms-auto disabled"
           >
             Save Image{" "}

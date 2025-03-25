@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
@@ -85,7 +85,7 @@ CREATE TABLE "Like" (
 CREATE TABLE "PostImage" (
     "id" TEXT NOT NULL,
     "postId" TEXT NOT NULL,
-    "thumbnail" TEXT NOT NULL
+    "imagePath" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -106,11 +106,26 @@ CREATE TABLE "Comment" (
 );
 
 -- CreateTable
-CREATE TABLE "Chats" (
+CREATE TABLE "Friend" (
+    "id" TEXT NOT NULL,
+    "friendListId" TEXT NOT NULL,
+    "userFriendId" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "FriendList" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Chat" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Chats_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Chat_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -127,23 +142,11 @@ CREATE TABLE "Message" (
     "id" TEXT NOT NULL,
     "message" TEXT NOT NULL,
     "senderId" TEXT NOT NULL,
-    "sent_at" TIMESTAMP(3) NOT NULL,
-    "roomId" TEXT NOT NULL,
+    "chatId" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Friend" (
-    "id" TEXT NOT NULL,
-    "friendListId" TEXT NOT NULL,
-    "userFriendId" TEXT NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "FriendList" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -204,18 +207,6 @@ ALTER TABLE "Comment" ADD CONSTRAINT "Comment_authorId_fkey" FOREIGN KEY ("autho
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Room" ADD CONSTRAINT "Room_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Room" ADD CONSTRAINT "Room_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Friend" ADD CONSTRAINT "Friend_friendListId_fkey" FOREIGN KEY ("friendListId") REFERENCES "FriendList"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -223,3 +214,18 @@ ALTER TABLE "Friend" ADD CONSTRAINT "Friend_userFriendId_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "FriendList" ADD CONSTRAINT "FriendList_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Chat" ADD CONSTRAINT "Chat_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Room" ADD CONSTRAINT "Room_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Room" ADD CONSTRAINT "Room_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Message" ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Message" ADD CONSTRAINT "Message_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE CASCADE ON UPDATE CASCADE;

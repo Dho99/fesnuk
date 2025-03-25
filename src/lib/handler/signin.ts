@@ -2,7 +2,6 @@
 
 import { prisma } from "../prisma";
 import { z } from "zod";
-import type { User } from "../definition";
 import { userValidateSchema } from "../zodSchema";
 import { signIn } from "@/lib/handler/auth";
 import { hashPassword } from "../utils";
@@ -27,7 +26,7 @@ export async function authenticate(prevState: unknown, formData: FormData) {
   try {
     const findUser = await getUser(formData);
     const passwordInput = formData.get("password") as string;
-    const hashPasswordInput = await hashPassword(passwordInput);
+    await hashPassword(passwordInput);
     if (!findUser) return "User not found";
 
     const userFound = {

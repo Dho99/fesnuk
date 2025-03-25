@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { hash, genSalt } from "bcrypt-ts"
@@ -51,7 +52,7 @@ export const returnErrMsg = (err: Error) => {
 }
 
 export async function storeImage(formData: FormData, storeDir: string | null) {
-  // 'use server'
+
   const imageFile = formData.get("image") as File;
   const timestamp = Date.now();
   const fileExtension = path.extname(imageFile.name);

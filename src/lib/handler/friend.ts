@@ -1,10 +1,10 @@
 'use server'
 
 import { prisma } from "../prisma";
-import { getUserDataSession, getUserIdSession } from "./user";
+import { getUserDataSession } from "./user";
 
 export async function getUserFriendId() {
-    const user = await getUserIdSession();
+    const user = await getUserDataSession();
 
     if (!user) return null;
 
@@ -27,7 +27,7 @@ export async function getUserFriendId() {
 }
 
 export async function getUserFriend() {
-    const user = await getUserIdSession();
+    const user = await getUserDataSession();
 
     if (!user) return null;
 
@@ -57,7 +57,7 @@ export async function getUserFriend() {
 }
 
 export async function addFriend(userId: string) {
-    const userSessionId = await getUserIdSession();
+    const userSessionId = await getUserDataSession();
 
     if (!userSessionId) return null;
 
@@ -103,7 +103,7 @@ export async function addFriend(userId: string) {
 
 
 export async function removeFriend(userId: string) {
-    const userSessionId = await getUserIdSession();
+    const userSessionId = await getUserDataSession();
 
     if (!userSessionId) return null;
 
@@ -138,7 +138,7 @@ export async function serverSearchFriend(formData: FormData) {
 
     const getUserSession = await getUserDataSession();
 
-    if (!getUserIdSession) return { success: false, message: "Not authenticated" };
+    if (!getUserDataSession) return { success: false, message: "Not authenticated" };
 
     const getFriendListId = await prisma.friendList.findFirst({
         where: {
