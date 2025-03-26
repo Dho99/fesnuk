@@ -7,7 +7,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
-export default function Menu() :React.ReactNode{
+export default function Menu(): React.ReactNode {
   type SettingsMenu = {
     name: string;
     icon: typeof UserIcon;
@@ -18,7 +18,7 @@ export default function Menu() :React.ReactNode{
     {
       name: "Account",
       icon: UserIcon,
-      href: "/",
+      href: "/account",
     },
     {
       name: "Sign Out",

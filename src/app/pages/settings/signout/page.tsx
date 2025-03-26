@@ -4,7 +4,7 @@ import { signOut } from "@/lib/handler/auth";
 
 export default async function Logout() {
   return (
-    <Flex flexDir="column" w="full" h="90vh" justifyContent={"center"}>
+    <Flex flexDir="column" w="full" h={"full"} justifyContent={"center"}>
       <Box
         w="full"
         display="flex"

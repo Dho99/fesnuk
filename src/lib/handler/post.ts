@@ -229,7 +229,7 @@ export async function likePost(postId: string, userEmail: string) {
   if (!getPost) return null;
 
   try {
-    const cteLike = await prisma.like.create({
+    await prisma.like.create({
       data: {
         postId: getPost.id as string,
         userId: getUser?.id as string,

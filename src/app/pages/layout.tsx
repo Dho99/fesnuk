@@ -25,7 +25,7 @@ export default function Layout({
       >
         <Navbar />
       </Box>
-      <Box flexBasis={"100%"} pt={10} overflowY="scroll" position={"relative"}>
+      <Box flexBasis={"100%"} pt={10} overflowY="auto" position={"relative"}>
         <Box maxW={"98%"} justifyContent={"center"} mx={{ lg: 0, base: "auto" }}>
           {children}
         </Box>

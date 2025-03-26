@@ -1,9 +1,4 @@
-import { Box, Flex, Link, Text } from "@chakra-ui/react";
-import {
-  UserIcon,
-  ArrowLeftStartOnRectangleIcon,
-} from "@heroicons/react/24/outline";
-import Logout from "@/components/settings/logout";
+import { Box, Flex } from "@chakra-ui/react";
 import Menu from "@/components/settings/menu";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -39,15 +34,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             flexBasis={"17%"}
             shadow={"sm"}
             py={5}
-            h="90vh"
-            overflowY={"auto"}
+            maxH="90vh"
             flexDir={"column"}
             rounded={{ xl: "none", lg: "none", md: "lg", sm: "lg", base: "lg" }}
             gap={2}
           >
             <Menu />
           </Flex>
-          <Box p="5" h="full" w="full">
+          <Box p="5" overflow={"auto"} h="90vh" w={"full"}>
             {children}
           </Box>
         </Flex>
