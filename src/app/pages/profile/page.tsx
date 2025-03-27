@@ -18,9 +18,9 @@ export default async function Page() {
                     <Box h={"full"} bg={"white"} p={5} position={"relative"} top={0} display={"flex"} justifyContent={"center"}>
                         <Box w={"11/12"} flexDir={"row"} display={"flex"} gap={5}>
                             <Box bg={"blue/40"} h={48} w={48} rounded={"full"} marginTop={-20}></Box>
-                            <Box p={2} display={"flex"} flexDir={"row"} gap={1} w={"1/3"}>
+                            <Box p={2} display={"flex"} flexDir={"row"} gap={5} minW={"1/3"}>
                                 <Box flexDir={"column"} display={'flex'}>
-                                    <Text textStyle={"2xl"} fontWeight={"bold"}>Cihuy</Text>
+                                    <Text textStyle={"2xl"} fontWeight={"bold"}>{authUserData?.name}</Text>
                                     <Text>@username</Text>
                                     <Text>Profile Biography</Text>
                                 </Box>

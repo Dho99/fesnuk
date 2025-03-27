@@ -53,7 +53,7 @@ export const authConfig = {
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/pages/home", nextUrl));
       }
-      return true;
+      return false;
     },
     jwt({ token, user }) {
       if (user) {
