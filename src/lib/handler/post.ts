@@ -36,6 +36,27 @@ export async function getAllPosts() {
   return posts;
 }
 
+export async function getUserPost(userId: string) {
+  const getPosts = await prisma.post.findMany({
+    where: {
+      userId: userId as string
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+      images: true,
+      likes: true,
+      comments: true,
+    },
+  });
+
+  return getPosts;
+}
+
 export async function createPost(formData: FormData) {
 
   const session = await auth();

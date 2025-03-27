@@ -9,7 +9,7 @@ import {
   FaceSmileIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { getAllPosts, likePost } from "@/lib/handler/post";
+import { likePost } from "@/lib/handler/post";
 import type { Post, User } from "@/lib/definition";
 import React from "react";
 import { daysFromToday } from "@/lib/utils";
@@ -26,12 +26,14 @@ export async function EmojiButton() {
 
 type PageProps = {
   pageProps: User | null;
+  posts: Post[] | null;
 };
 
 export default async function Post({
   pageProps,
+  posts
 }: PageProps): Promise<React.ReactNode> {
-  const posts = await getAllPosts();
+  // const posts = await getAllPosts() | null;
 
   return posts?.map((post, i) => {
     return (

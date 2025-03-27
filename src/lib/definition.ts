@@ -19,8 +19,8 @@ export type Post = {
   images: {
     id: string;
     postId: string;
-    thumbnail: string;
-  }[];
+    imagePath: string;
+  }[] | null;
   comments: {
     id: string;
     createdAt: Date;
@@ -33,6 +33,8 @@ export type Post = {
     postId: string;
     userId: string;
   }[];
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Like = {
