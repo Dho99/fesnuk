@@ -18,14 +18,13 @@ export async function getUserProfile(email: string | undefined | null) {
   return userProfile;
 }
 
-export async function getUserData(email: string | undefined | null) {
+export async function getUserDataById(userId: string) {
   const userProfile = await prisma.user.findFirst({
     where: {
-      email: email as string,
+      id: userId as string
     },
   });
 
-  if (!userProfile) return null;
   return userProfile;
 }
 

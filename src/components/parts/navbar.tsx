@@ -16,6 +16,7 @@ import {
   Bars3Icon,
   Cog6ToothIcon
 } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 
@@ -24,7 +25,6 @@ type Menu = {
   menuName: string
   href: string
 };
-
 const mainMenu: Menu[] = [
   {
     icon: ChatBubbleLeftRightIcon,
@@ -95,6 +95,7 @@ const exploreMenu: Menu[] = [
 
 export default function Navbar() {
   const router = useRouter();
+  const { data: session } = useSession();
 
 
   return (
@@ -120,7 +121,10 @@ export default function Navbar() {
             _hover={{ bgColor: "gray.100", color: "blue.500" }}
             transition={"all 0.3s"}
             borderRadius={"md"}
-            onClick={() => { router.push(`/pages/${menu.href}`) }}
+            onClick={() => {
+              if (menu.href == '/profile') return router.push(`/pages/profile/${session?.user?.id}`)
+              return router.push(`/pages/${menu.href}`)
+            }}
           >
             <Flex p={3} direction={"row"} gapX={4}>
               <menu.icon className="size-6" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import React from "react";
 import PostLikeAction from "./action/like";
 import PostommentAction from "./action/comment";

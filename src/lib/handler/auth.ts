@@ -7,14 +7,39 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "../prisma";
 
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+  }
+}
+
+
 export const providerConfigs: Provider[] = [
   GitHub({
     clientId: process.env.AUTH_GITHUB_ID,
     clientSecret: process.env.AUTH_GITHUB_SECRET,
+    profile(profile) {
+      return {
+        id: profile.id.toString(),
+        name: profile.name,
+        email: profile.email,
+        image: profile.avatar_url,
+        username: profile.name ? profile.name.replace(' ', '_').toLowerCase() : profile.id,
+      };
+    }
   }),
   Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    profile(profile) {
+      return {
+        id: profile.sub || profile.id,
+        name: profile.name,
+        email: profile.email,
+        image: profile.picture,
+        username: profile.name.replace(' ', '_').toLowerCase(),
+      };
+    }
   }),
   Credentials({
     authorize: async (credentials) => {
@@ -44,7 +69,7 @@ export const authConfig = {
     signIn: "/auth",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    async authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnPages = nextUrl.pathname.startsWith("/pages");
       if (isOnPages) {
@@ -53,15 +78,29 @@ export const authConfig = {
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/pages/home", nextUrl));
       }
-      return true;
+      return false;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        // User is available during sign-in
-        token.id = user.id;
+        token.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
       }
       return token;
     },
+    async session({ session, token }) {
+      if (token.user) {
+        session.user = token.user as typeof session.user & {
+          id: string;
+          username?: string;
+        };
+      }
+      return session;
+    }
+
   },
 } satisfies NextAuthConfig;
 

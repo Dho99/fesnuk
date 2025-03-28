@@ -1,30 +1,44 @@
+
 import { Box, Text } from "@chakra-ui/react";
 import { getUserPost } from "@/lib/handler/post";
 import { getUserDataSession } from "@/lib/handler/user";
 import Post from "@/components/parts/post/post";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { getUserFriend } from "@/lib/handler/friend";
+import type { Friend, Post as PostType, User } from "@/lib/definition";
+import { EditProfileButton } from "./partialcomponent";
+
+type ProfilePage = {
+    authUser: User | null;
+    posts: PostType[];
+    friends: Friend[];
+
+}
 
 export default async function Page() {
-    const authUserData = await getUserDataSession();
-    const posts = await getUserPost(authUserData?.id as string);
+    const authUserData: ProfilePage["authUser"] = await getUserDataSession();
+    const posts: ProfilePage["posts"] = await getUserPost(authUserData?.id as string);
+    const friends: ProfilePage["friends"] = (await getUserFriend())?.friends || [];
 
     return (
         <Box w={"full"} h={"full"} color={"black"} display={"flex"} mb={20}>
             <Box w={"full"} h={"full"} rounded={"lg"} display={"flex"} flexDir={"column"} overflow={"hidden"} gapY={5}>
                 <Box>
 
-                    <Box bg={"black/10"} h={"10%"} minW={"full"} p={"70px"}></Box>
+                    <Box bg={"black/10"} h={"10%"} w={"full"} p={"70px"} />
 
                     <Box h={"full"} bg={"white"} p={5} position={"relative"} top={0} display={"flex"} justifyContent={"center"}>
                         <Box w={"11/12"} flexDir={"row"} display={"flex"} gap={5}>
-                            <Box bg={"blue/40"} h={48} w={48} rounded={"full"} marginTop={-20}></Box>
-                            <Box p={2} display={"flex"} flexDir={"row"} gap={1} w={"1/3"}>
+                            <Box bg={"black/20"} shadow={"lg"} h={48} w={48} rounded={"full"} marginTop={-20} overflow={"hidden"}>
+                                <Image src={authUserData?.image as string} alt={`${authUserData?.name} Profile`} width={500} height={500} /></Box>
+                            <Box p={2} display={"flex"} flexDir={"row"} gap={5} minW={"1/3"}>
                                 <Box flexDir={"column"} display={'flex'}>
-                                    <Text textStyle={"2xl"} fontWeight={"bold"}>Cihuy</Text>
-                                    <Text>@username</Text>
-                                    <Text>Profile Biography</Text>
+                                    <Text textStyle={"2xl"} fontWeight={"bold"}>{authUserData?.name}</Text>
+                                    <Text>{`@${authUserData?.username}`}</Text>
+                                    <Text>{authUserData?.biography}</Text>
                                 </Box>
-                                <button className="bg-blue-700 shadow-lg text-white px-5 py-2 rounded-xl ms-auto h-fit ">Edit Profile</button>
+                                <EditProfileButton />
                             </Box>
                         </Box>
                     </Box>
@@ -33,7 +47,7 @@ export default async function Page() {
                 <Box w={"full"} display={"flex"} flexDir={"row"} gap={4}>
                     <Box w={"3/4"} display={"flex"} flexDir={"column"} gap={4}>
                         {
-                            posts.length > 1 ? (
+                            posts.length > 0 ? (
                                 <Post pageProps={authUserData} posts={posts} />
                             ) : (
                                 <Box bg={"white"} rounded={"lg"} p={10} display={"flex"} justifyContent={"center"}>
@@ -44,13 +58,26 @@ export default async function Page() {
                                 </Box>
                             )
                         }
-                        {/* <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box> */}
                     </Box>
-                    <Box w={"1/2"} bg={"white"} rounded={"lg"} p={4}>Posts</Box>
+                    <Box w={"1/3"} display={"flex"} flexDir={"column"} gap={5}>
+                        {
+                            friends.length > 0 ? (
+                                friends.map((friend: Friend, index: number) => (
+                                    <Box p={5} rounded={"lg"} bg={"white"} display={"flex"} flexDir={"row"} gap={5} key={index}>
+                                        <Box bg={"black/20"} rounded={"full"} w={"14"} h={"14"}></Box>
+                                        <Box>
+                                            <Text textStyle={"lg"} fontWeight={"bold"}>{friend.friendData.name}</Text>
+                                        </Box>
+                                    </Box>
+                                ))
+                            ) : (
+                                <Box p={5} rounded={"lg"} bg={"white"} display={"flex"} flexDir={"row"} gap={5} justifyContent={"center"}>
+                                    <Text textStyle={"lg"} fontWeight={"bold"}>Not have any Friend</Text>
+                                </Box>
+                            )
+                        }
+
+                    </Box>
                 </Box>
             </Box>
         </Box>
