@@ -4,14 +4,14 @@ import { prisma } from "../prisma";
 import { auth } from "@/lib/handler/auth";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
-import { getUserData } from "./user";
+import { getUserDataById } from "./user";
 import { CommentProps } from "../definition";
 import { storeImage } from "../utils";
 
 export async function getAllPosts() {
   const session = await auth();
 
-  const userData = await getUserData(session?.user?.email);
+  const userData = await getUserDataById(session?.user?.id as string);
 
   if (!userData) return null;
 
@@ -237,8 +237,8 @@ export async function getComments(
   }
 }
 
-export async function likePost(postId: string, userEmail: string) {
-  const getUser = await getUserData(userEmail);
+export async function likePost(postId: string, userId: string) {
+  const getUser = await getUserDataById(userId);
 
   if (!getUser) return null;
 

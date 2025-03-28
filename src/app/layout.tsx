@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from "@/components/ui/provider";
 import { Box } from "@chakra-ui/react";
-
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +26,14 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body>
         <Provider>
-          <main
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Box maxH={"dvh"} maxW="dvw" overflow={"hidden"}>{children}</Box>
-          </main>
+          <SessionProvider>
+
+            <main
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Box maxH={"dvh"} maxW="dvw" overflow={"hidden"}>{children}</Box>
+            </main>
+          </SessionProvider>
         </Provider>
       </body>
     </html>

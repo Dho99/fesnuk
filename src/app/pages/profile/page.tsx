@@ -1,13 +1,25 @@
+
 import { Box, Text } from "@chakra-ui/react";
 import { getUserPost } from "@/lib/handler/post";
 import { getUserDataSession } from "@/lib/handler/user";
 import Post from "@/components/parts/post/post";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { getUserFriend } from "@/lib/handler/friend";
+import type { Friend, Post as PostType, User } from "@/lib/definition";
+import { EditProfileButton } from "./partialcomponent";
+
+type ProfilePage = {
+    authUser: User | null;
+    posts: PostType[];
+    friends: Friend[];
+
+}
 
 export default async function Page() {
-    const authUserData = await getUserDataSession();
-    const posts = await getUserPost(authUserData?.id as string);
+    const authUserData: ProfilePage["authUser"] = await getUserDataSession();
+    const posts: ProfilePage["posts"] = await getUserPost(authUserData?.id as string);
+    const friends: ProfilePage["friends"] = (await getUserFriend())?.friends || [];
 
     return (
         <Box w={"full"} h={"full"} color={"black"} display={"flex"} mb={20}>
@@ -26,7 +38,7 @@ export default async function Page() {
                                     <Text>{`@${authUserData?.username}`}</Text>
                                     <Text>{authUserData?.biography}</Text>
                                 </Box>
-                                <button className="bg-blue-700 shadow-lg text-white px-5 py-2 rounded-xl ms-auto h-fit ">Edit Profile</button>
+                                <EditProfileButton />
                             </Box>
                         </Box>
                     </Box>
@@ -47,7 +59,25 @@ export default async function Page() {
                             )
                         }
                     </Box>
-                    <Box w={"1/2"} bg={"white"} rounded={"lg"} p={4}>Posts</Box>
+                    <Box w={"1/3"} display={"flex"} flexDir={"column"} gap={5}>
+                        {
+                            friends.length > 0 ? (
+                                friends.map((friend: Friend, index: number) => (
+                                    <Box p={5} rounded={"lg"} bg={"white"} display={"flex"} flexDir={"row"} gap={5} key={index}>
+                                        <Box bg={"black/20"} rounded={"full"} w={"14"} h={"14"}></Box>
+                                        <Box>
+                                            <Text textStyle={"lg"} fontWeight={"bold"}>{friend.friendData.name}</Text>
+                                        </Box>
+                                    </Box>
+                                ))
+                            ) : (
+                                <Box p={5} rounded={"lg"} bg={"white"} display={"flex"} flexDir={"row"} gap={5} justifyContent={"center"}>
+                                    <Text textStyle={"lg"} fontWeight={"bold"}>Not have any Friend</Text>
+                                </Box>
+                            )
+                        }
+
+                    </Box>
                 </Box>
             </Box>
         </Box>

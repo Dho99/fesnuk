@@ -7,6 +7,13 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "../prisma";
 
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+  }
+}
+
+
 export const providerConfigs: Provider[] = [
   GitHub({
     clientId: process.env.AUTH_GITHUB_ID,
@@ -62,7 +69,7 @@ export const authConfig = {
     signIn: "/auth",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    async authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnPages = nextUrl.pathname.startsWith("/pages");
       if (isOnPages) {
@@ -73,13 +80,27 @@ export const authConfig = {
       }
       return false;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        // User is available during sign-in
-        token.id = user.id;
+        token.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
       }
       return token;
     },
+    async session({ session, token }) {
+      if (token.user) {
+        session.user = token.user as typeof session.user & {
+          id: string;
+          username?: string;
+        };
+      }
+      return session;
+    }
+
   },
 } satisfies NextAuthConfig;
 

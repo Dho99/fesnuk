@@ -2,6 +2,8 @@ export type User = {
   email: string;
   name: string;
   id: string;
+  username: string;
+  biography: string | null;
   password: string | null;
   emailVerified: Date | null;
   image: string | null;

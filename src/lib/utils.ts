@@ -1,4 +1,4 @@
-
+'use server'
 
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 import z from 'zod';
 import fs from 'fs';
 
-export function cn(...inputs: ClassValue[]) {
+export async function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
@@ -17,7 +17,7 @@ export const hashPassword = async (raw: string) => {
   return hashRawPswd;
 }
 
-export const daysFromToday = (date: Date) => {
+export const daysFromToday = async (date: Date) => {
   const now = new Date();
   const targetDate = new Date(date);
   const differenceInTime = now.getTime() - targetDate.getTime();
@@ -39,7 +39,7 @@ export const daysFromToday = (date: Date) => {
   }
 };
 
-export const formatDate = (date: Date) => {
+export const formatDate = async (date: Date) => {
   const format = new Date(date).toLocaleTimeString();
   return format;
 }
