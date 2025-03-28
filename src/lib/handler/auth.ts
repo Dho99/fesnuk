@@ -11,10 +11,28 @@ export const providerConfigs: Provider[] = [
   GitHub({
     clientId: process.env.AUTH_GITHUB_ID,
     clientSecret: process.env.AUTH_GITHUB_SECRET,
+    profile(profile) {
+      return {
+        id: profile.id.toString(),
+        name: profile.name,
+        email: profile.email,
+        image: profile.avatar_url,
+        username: profile.name ? profile.name.replace(' ', '_').toLowerCase() : profile.id,
+      };
+    }
   }),
   Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    profile(profile) {
+      return {
+        id: profile.sub || profile.id,
+        name: profile.name,
+        email: profile.email,
+        image: profile.picture,
+        username: profile.name.replace(' ', '_').toLowerCase(),
+      };
+    }
   }),
   Credentials({
     authorize: async (credentials) => {
