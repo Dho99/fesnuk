@@ -3,6 +3,7 @@ import { getUserPost } from "@/lib/handler/post";
 import { getUserDataSession } from "@/lib/handler/user";
 import Post from "@/components/parts/post/post";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 export default async function Page() {
     const authUserData = await getUserDataSession();
@@ -13,11 +14,12 @@ export default async function Page() {
             <Box w={"full"} h={"full"} rounded={"lg"} display={"flex"} flexDir={"column"} overflow={"hidden"} gapY={5}>
                 <Box>
 
-                    <Box bg={"black/10"} h={"10%"} minW={"full"} p={"70px"}></Box>
+                    <Box bg={"black/10"} h={"10%"} w={"full"} p={"70px"} />
 
                     <Box h={"full"} bg={"white"} p={5} position={"relative"} top={0} display={"flex"} justifyContent={"center"}>
                         <Box w={"11/12"} flexDir={"row"} display={"flex"} gap={5}>
-                            <Box bg={"blue/40"} h={48} w={48} rounded={"full"} marginTop={-20}></Box>
+                            <Box bg={"black/20"} shadow={"lg"} h={48} w={48} rounded={"full"} marginTop={-20} overflow={"hidden"}>
+                                <Image src={authUserData?.image as string} alt={`${authUserData?.name} Profile`} width={500} height={500} /></Box>
                             <Box p={2} display={"flex"} flexDir={"row"} gap={5} minW={"1/3"}>
                                 <Box flexDir={"column"} display={'flex'}>
                                     <Text textStyle={"2xl"} fontWeight={"bold"}>{authUserData?.name}</Text>
@@ -33,7 +35,7 @@ export default async function Page() {
                 <Box w={"full"} display={"flex"} flexDir={"row"} gap={4}>
                     <Box w={"3/4"} display={"flex"} flexDir={"column"} gap={4}>
                         {
-                            posts.length > 1 ? (
+                            posts.length > 0 ? (
                                 <Post pageProps={authUserData} posts={posts} />
                             ) : (
                                 <Box bg={"white"} rounded={"lg"} p={10} display={"flex"} justifyContent={"center"}>
@@ -44,11 +46,6 @@ export default async function Page() {
                                 </Box>
                             )
                         }
-                        {/* <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box>
-                        <Box bg={"white"} rounded={"lg"} p={3}>Posts</Box> */}
                     </Box>
                     <Box w={"1/2"} bg={"white"} rounded={"lg"} p={4}>Posts</Box>
                 </Box>
